@@ -1,0 +1,255 @@
+Terminals unused in grammar
+
+   struct_or_union
+   assignment_operator
+   ENUM
+   IF
+   ELSE
+   SWITCH
+   DO
+   FOR
+   CASE
+   WHILE
+   GOTO
+   CONTINUE
+   BREAK
+   RETURN
+   DEFAULT
+   SIZEOF
+   DOTS
+   GT
+   LT
+   GE
+   LE
+   PP
+   MM
+   ARROW
+   LSHIFT
+   RSHIFT
+   unary_operator
+   string
+   typedef_name
+
+
+文法
+
+    0 $accept: function_definition $end
+
+    1 function_definition: declaration_specifier declarator declaration compound_statement
+
+    2 declaration_specifier: storage_class_specifier
+    3                      | type_specifier
+    4                      | type_qualifier
+
+    5 type_specifier: type_specifier_keywords
+
+    6 declaration: declaration_specifier
+    7            | declaration_specifier init_declarator
+
+    8 init_declarator: declarator
+
+    9 compound_statement: '{' '}'
+
+   10 declarator: identifier
+
+
+出現位置の規則による終端
+
+$end (0) 0
+'{' (123) 9
+'}' (125) 9
+error (256)
+storage_class_specifier (258) 2
+type_specifier_keywords (259) 5
+type_qualifier (260) 4
+struct_or_union (261)
+assignment_operator (262)
+ENUM (263)
+IF (264)
+ELSE (265)
+SWITCH (266)
+DO (267)
+FOR (268)
+CASE (269)
+WHILE (270)
+GOTO (271)
+CONTINUE (272)
+BREAK (273)
+RETURN (274)
+DEFAULT (275)
+SIZEOF (276)
+DOTS (277)
+GT (278)
+LT (279)
+GE (280)
+LE (281)
+PP (282)
+MM (283)
+ARROW (284)
+LSHIFT (285)
+RSHIFT (286)
+unary_operator (287)
+string (288)
+typedef_name (289)
+identifier (290) 10
+
+
+出現位置の規則による非終端
+
+$accept (38)
+    左辺: 0
+function_definition (39)
+    左辺: 1, 右辺: 0
+declaration_specifier (40)
+    左辺: 2 3 4, 右辺: 1 6 7
+type_specifier (41)
+    左辺: 5, 右辺: 3
+declaration (42)
+    左辺: 6 7, 右辺: 1
+init_declarator (43)
+    左辺: 8, 右辺: 7
+compound_statement (44)
+    左辺: 9, 右辺: 1
+declarator (45)
+    左辺: 10, 右辺: 1 8
+
+
+State 0
+
+    0 $accept: . function_definition $end
+
+    storage_class_specifier  shift, and go to state 1
+    type_specifier_keywords  shift, and go to state 2
+    type_qualifier           shift, and go to state 3
+
+    function_definition    go to state 4
+    declaration_specifier  go to state 5
+    type_specifier         go to state 6
+
+
+State 1
+
+    2 declaration_specifier: storage_class_specifier .
+
+    $default  reduce using rule 2 (declaration_specifier)
+
+
+State 2
+
+    5 type_specifier: type_specifier_keywords .
+
+    $default  reduce using rule 5 (type_specifier)
+
+
+State 3
+
+    4 declaration_specifier: type_qualifier .
+
+    $default  reduce using rule 4 (declaration_specifier)
+
+
+State 4
+
+    0 $accept: function_definition . $end
+
+    $end  shift, and go to state 7
+
+
+State 5
+
+    1 function_definition: declaration_specifier . declarator declaration compound_statement
+
+    identifier  shift, and go to state 8
+
+    declarator  go to state 9
+
+
+State 6
+
+    3 declaration_specifier: type_specifier .
+
+    $default  reduce using rule 3 (declaration_specifier)
+
+
+State 7
+
+    0 $accept: function_definition $end .
+
+    $default  accept
+
+
+State 8
+
+   10 declarator: identifier .
+
+    $default  reduce using rule 10 (declarator)
+
+
+State 9
+
+    1 function_definition: declaration_specifier declarator . declaration compound_statement
+
+    storage_class_specifier  shift, and go to state 1
+    type_specifier_keywords  shift, and go to state 2
+    type_qualifier           shift, and go to state 3
+
+    declaration_specifier  go to state 10
+    type_specifier         go to state 6
+    declaration            go to state 11
+
+
+State 10
+
+    6 declaration: declaration_specifier .
+    7            | declaration_specifier . init_declarator
+
+    identifier  shift, and go to state 8
+
+    $default  reduce using rule 6 (declaration)
+
+    init_declarator  go to state 12
+    declarator       go to state 13
+
+
+State 11
+
+    1 function_definition: declaration_specifier declarator declaration . compound_statement
+
+    '{'  shift, and go to state 14
+
+    compound_statement  go to state 15
+
+
+State 12
+
+    7 declaration: declaration_specifier init_declarator .
+
+    $default  reduce using rule 7 (declaration)
+
+
+State 13
+
+    8 init_declarator: declarator .
+
+    $default  reduce using rule 8 (init_declarator)
+
+
+State 14
+
+    9 compound_statement: '{' . '}'
+
+    '}'  shift, and go to state 16
+
+
+State 15
+
+    1 function_definition: declaration_specifier declarator declaration compound_statement .
+
+    $default  reduce using rule 1 (function_definition)
+
+
+State 16
+
+    9 compound_statement: '{' '}' .
+
+    $default  reduce using rule 9 (compound_statement)

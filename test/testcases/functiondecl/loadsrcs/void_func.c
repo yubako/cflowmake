@@ -1,0 +1,8 @@
+
+
+void fname(int a)
+{
+}
+
+
+
