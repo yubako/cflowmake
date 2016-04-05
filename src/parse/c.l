@@ -11,6 +11,8 @@ unsigned int g_line = 1;
 
 letters ([a-zA-Z_]+)
 digits  ([0-9]+)
+digit   ([0-9])
+sign    [+-]
 
 %%
 
@@ -43,7 +45,16 @@ long        |
 float       |
 double      |
 signed      |
-unsigned    { return type_specifier_keywords; }
+unsigned    |
+key_t       |
+pid_t       |
+uint32_t    |
+uint16_t    {
+
+                /* sys/types.h の一部についても含めておく。typedef定義の対応が面倒... */
+
+                return type_specifier_keywords; 
+            }
 
 
 const       |
@@ -66,9 +77,8 @@ break       { return BREAK;     }
 return      { return RETURN;    }
 default     { return DEFAULT;   }
 sizeof      { return SIZEOF;    }
-"..."       { return DOTS;      }
+"\.\.\."    { return DOTS;      }
 
-"="         |
 "*="        |
 "/="        |
 "%="        |
@@ -78,7 +88,7 @@ sizeof      { return SIZEOF;    }
 ">>="       |
 "&="        |
 "^="        |
-"|="        { return assignment_operator; }
+"|="        { return assignment_operator_keywords; }
 
 "<"         { return GT; }
 ">"         { return LT; }
@@ -91,7 +101,12 @@ sizeof      { return SIZEOF;    }
 "++"        { return PP; }
 "--"        { return MM; }
 "->"        { return ARROW; }
+\.          { return DOT;       }
 
+"||"        { return OR;  }
+"&&"        { return AND; }
+"=="        { return EQUAL;  }
+"!="        { return NOTEQUAL; }
 
 
 \"[^\\\"]+\" { return string;      }
@@ -109,18 +124,8 @@ sizeof      { return SIZEOF;    }
  */
 %}
 {letters}({letters}|{digits})*  {
-
-                                    /*
-                                     * シンボルテーブルを検索し、typedef宣言されたものと一致すれば
-                                     * typedef_name を返却する。
-                                     * それ以外はidentifierとする
-                                     */
-                                     printf("identifier %s\n", yytext);
-
-                                     //return typedef_name;
                                      return identifier;
                                 }
-
 
 
 %{
@@ -133,8 +138,17 @@ sizeof      { return SIZEOF;    }
  * also be suffixed by the letter l or L to specify that it is long
  */
 %}
-([0-9a-fA-F]+)[uUlL]{1}       { printf("integer constants %s\n", yytext); }
 
+(0[xX])?([0-9a-fA-F]+)[uUlL]?  { 
+                                    return integer_constant; 
+                               }
+
+{digit}\.{digit}+[eE]?{sign}?{digit}+[flFL]? |
+{digit}?\.{digit}                            { 
+                                                return floating_constant; 
+                                             }
+
+\'.\'                           { return character_constant; }
 
 . { return yytext[0]; }
 %%

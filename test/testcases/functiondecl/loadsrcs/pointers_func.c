@@ -1,5 +1,5 @@
 
-int func(int * val)
+int* func(int * val, void* arg2)
 {
 }
 

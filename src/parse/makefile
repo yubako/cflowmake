@@ -13,23 +13,19 @@ SILENCE=@
 
 all : $(LIB)
 
-$(LIB) : $(OBJS)
+$(LIB) : $(OBJS) 
 	ar ruv $(LIB) $(OBJS) 
 
 yacc: 
+	$(SILENCE)$(call make_directory, $(YACCWORK))
 	$(SILENCE)bison -v -d c.y -o $(YACCWORK)/cy.c
 	$(SILENCE)flex -o$(YACCWORK)/cl.c c.l
 
-obj/cy.o: c.y
-	$(SILENCE)$(call make_directory, $(YACCWORK))
-	$(SILENCE)make yacc;
+obj/cy.o:  yacc
 	$(SILENCE)gcc $(YACCDEBUG) -I$(YACCWORK) -c -o $@ $(YACCWORK)/cy.c 
 
-obj/cl.o: c.l
-	$(SILENCE)$(call make_directory, $(YACCWORK))
-	$(SILENCE)make yacc;
+obj/cl.o:  yacc
 	$(SILENCE)gcc $(YACCDEBUG) -I$(YACCWORK) -c -o $@ $(YACCWORK)/cl.c
-
 
 obj/%.o : %.c
 	@echo compiling $<

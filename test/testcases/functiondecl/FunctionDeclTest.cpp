@@ -48,6 +48,17 @@ TEST(SourceLoadTest, pointers_func )
 {
     const char* path = "loadsrcs/pointers_func.c";
     LONGS_EQUAL( 0 ,cflowSrcParse(path));
-//    cflowStdinParse();
 }
 
+TEST(SourceLoadTest, struct_func )
+{
+    const char* path = "loadsrcs/struct_func.c";
+    LONGS_EQUAL( 0 ,cflowSrcParse(path));
+}
+
+TEST(SourceLoadTest, enum_func )
+{
+    const char* path = "loadsrcs/enum_func.c";
+    LONGS_EQUAL( 0 ,cflowSrcParse(path));
+//   cflowStdinParse(); 
+}
