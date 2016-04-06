@@ -206,14 +206,61 @@ typedef_name                            : identifier
 
 
 /*
-    '{' '}' で閉じられたstatmenet  compound_statement
-*/
-compound_statement                      : '{' '}'
+    式
+ */
+statement                               : labeled_statement
+                                        | expression_statement
+                                        | compound_statement
+                                        | select_statement
+                                        | iteration_statement
+                                        | jump_statement
+                                        ;
+
+labeled_statement                       : identifier ':' statement
+                                        | CASE constant_expression ':' statement
+                                        | DEFAULT ':' statement
+                                        ;
+
+expression_statement                    : expression ';'
+                                        |            ';'
+                                        ;
+
+select_statement                        : IF '(' expression ')' statement
+                                        | IF '(' expression ')' statement ELSE statement
+                                        | SWITCH '(' expression ')' statement
+                                        ;
+
+iteration_statement                     : WHILE '(' expression ')' statement
+                                        | DO statement WHILE '(' expression ')' ';'
+                                        | FOR '(' expression ';' expression ';' expression ')' statement
+                                        | FOR '(' expression ';' expression ';'            ')' statement
+                                        | FOR '(' expression ';'            ';' expression ')' statement
+                                        | FOR '(' expression ';'            ';'            ')' statement
+                                        | FOR '('            ';' expression ';' expression ')' statement
+                                        | FOR '('            ';' expression ';'            ')' statement
+                                        | FOR '('            ';'            ';' expression ')' statement
+                                        | FOR '('            ';'            ';'            ')' statement
+                                        ;
+
+jump_statement                          : GOTO identifier ';'
+                                        | CONTINUE ';'
+                                        | BREAK    ';'
+                                        | RETURN expression ';'
+                                        | RETURN            ';'
                                         ;
 
 /*
-    式
- */
+    '{' '}' で閉じられたstatmenet  compound_statement
+*/
+compound_statement                      : '{' declaration_list statement_list '}'
+                                        | '{' declaration_list                '}'
+                                        | '{'                  statement_list '}'
+                                        | '{'                                 '}'
+                                        ;
+
+statement_list                          :                statement
+                                        | statement_list statement
+                                        ;
 
 
 /*
