@@ -1,12 +1,14 @@
 %{
 
-#include "cy.h"
+#include "cy.hpp"
+#include <string.h>
 #include <stdio.h>
 
 unsigned int g_line = 1;
 
 %}
 
+/* %option c++ */
 %x cpp_comment c_comment
 
 letters ([a-zA-Z_]+)
@@ -16,14 +18,16 @@ sign    [+-]
 
 %%
 
-"/*"             { BEGIN c_comment;              }
-"*/"             { BEGIN 0;                      }
-"//"             { BEGIN cpp_comment;            }
-<cpp_comment>\n  { g_line ++; BEGIN 0;           }
-<cpp_comment>.   { /* ignore; */                 }
-<c_comment>.     { /* ignore; */                 }
-"\n"             { g_line++ ;                    }
-[ \t]+           { /* ignore spaces */           }
+"/*"             { BEGIN c_comment;                 }
+"*/"             { BEGIN 0;                         }
+"//"             { BEGIN cpp_comment;               }
+<cpp_comment>\n  { g_line ++; BEGIN 0;              }
+<cpp_comment>.   { /* ignore; */                    }
+<c_comment>.     { /* ignore; */                    }
+"\n"             { 
+                    g_line++ ;  
+                 }
+[ \t]+           { /* ignore spaces */              }
 
 %{
 /*
@@ -35,7 +39,10 @@ auto        |
 register    |
 static      |
 extern      |
-typedef     { return storage_class_specifier; }
+typedef     { 
+                yylval.str = strdup(yytext);
+                return storage_class_specifier; 
+            }
 
 void        |
 char        |
@@ -51,33 +58,42 @@ pid_t       |
 uint32_t    |
 uint16_t    {
 
+
                 /* sys/types.h の一部についても含めておく。typedef定義の対応が面倒... */
 
+                yylval.str = strdup(yytext);
                 return type_specifier_keywords; 
             }
 
 
 const       |
-volatile    { return type_qualifier_keywords; }
+volatile    { 
+                yylval.str = strdup(yytext);
+                return type_qualifier_keywords; 
+            }
+
 
 struct      |
-union       { return struct_or_union; }
+union       { 
+                yylval.str = strdup(yytext);
+                return struct_or_union; 
+            }
 
-enum        { return ENUM;      }
-if          { return IF;        }
-else        { return ELSE;      }
-switch      { return SWITCH;    }
-do          { return DO;        }
-for         { return FOR;       }
-case        { return CASE;      }
-while       { return WHILE;     }
-goto        { return GOTO;      }
-continue    { return CONTINUE;  }
-break       { return BREAK;     }
-return      { return RETURN;    }
-default     { return DEFAULT;   }
-sizeof      { return SIZEOF;    }
-"\.\.\."    { return DOTS;      }
+enum        { yylval.str = strdup(yytext); return ENUM;      }
+if          { yylval.str = strdup(yytext); return IF;        }
+else        { yylval.str = strdup(yytext); return ELSE;      }
+switch      { yylval.str = strdup(yytext); return SWITCH;    }
+do          { yylval.str = strdup(yytext); return DO;        }
+for         { yylval.str = strdup(yytext); return FOR;       }
+case        { yylval.str = strdup(yytext); return CASE;      }
+while       { yylval.str = strdup(yytext); return WHILE;     }
+goto        { yylval.str = strdup(yytext); return GOTO;      }
+continue    { yylval.str = strdup(yytext); return CONTINUE;  }
+break       { yylval.str = strdup(yytext); return BREAK;     }
+return      { yylval.str = strdup(yytext); return RETURN;    }
+default     { yylval.str = strdup(yytext); return DEFAULT;   }
+sizeof      { yylval.str = strdup(yytext); return SIZEOF;    }
+"\.\.\."    { yylval.str = strdup(yytext); return DOTS;      }
 
 "*="        |
 "/="        |
@@ -88,28 +104,28 @@ sizeof      { return SIZEOF;    }
 ">>="       |
 "&="        |
 "^="        |
-"|="        { return assignment_operator_keywords; }
+"|="        { yylval.str = strdup(yytext); return assignment_operator_keywords; }
+               
+"<"         { yylval.str = strdup(yytext); return GT; }
+">"         { yylval.str = strdup(yytext); return LT; }
+"<="        { yylval.str = strdup(yytext); return GE; }
+">="        { yylval.str = strdup(yytext); return LE; }
+               
+"<<"        { yylval.str = strdup(yytext); return LSHIFT; }
+">>"        { yylval.str = strdup(yytext); return RSHIFT; }
 
-"<"         { return GT; }
-">"         { return LT; }
-"<="        { return GE; }
-">="        { return LE; }
+"++"        { yylval.str = strdup(yytext); return PP; }
+"--"        { yylval.str = strdup(yytext); return MM; }
+"->"        { yylval.str = strdup(yytext); return ARROW; }
+\.          { yylval.str = strdup(yytext); return DOT;  }
 
-"<<"        { return LSHIFT; }
-">>"        { return RSHIFT; }
-
-"++"        { return PP; }
-"--"        { return MM; }
-"->"        { return ARROW; }
-\.          { return DOT;       }
-
-"||"        { return OR;  }
-"&&"        { return AND; }
-"=="        { return EQUAL;  }
-"!="        { return NOTEQUAL; }
+"||"        { yylval.str = strdup(yytext); return OR;  }
+"&&"        { yylval.str = strdup(yytext); return AND; }
+"=="        { yylval.str = strdup(yytext); return EQUAL;    }
+"!="        { yylval.str = strdup(yytext); return NOTEQUAL; }
 
 
-\"[^\\\"]+\" { return string;      }
+\"[^\"]+\"  { yylval.str = strdup(yytext); return string;      }
 
 %{
 /*
@@ -124,7 +140,8 @@ sizeof      { return SIZEOF;    }
  */
 %}
 {letters}({letters}|{digits})*  {
-                                     return identifier;
+                                    yylval.str = strdup(yytext);
+                                    return identifier;
                                 }
 
 
@@ -139,23 +156,31 @@ sizeof      { return SIZEOF;    }
  */
 %}
 
-(0[xX])?([0-9a-fA-F]+)[uUlL]?  { 
+(0[xX])?([0-9a-fA-F]+)[uUlL]?  {   
+                                    yylval.str = strdup(yytext); 
                                     return integer_constant; 
                                }
 
 {digit}\.{digit}+[eE]?{sign}?{digit}+[flFL]? |
 {digit}?\.{digit}                            { 
+                                                yylval.str = strdup(yytext);
                                                 return floating_constant; 
                                              }
 
-\'.\'                           { return character_constant; }
+\'.\'                           { 
+                                    yylval.str = strdup(yytext);
+                                    return character_constant; 
+                                }
 
-. { return yytext[0]; }
+.                               {
+                                    switch( yytext[0] )
+                                    {
+                                        case '{' :
+                                        case '}' :
+                                        default  : yylval.str = strdup(yytext);
+                                    }
+                                    return g_line, yytext[0]; 
+                                }
 %%
 
-
-void yyerror(char *s)
-{
-    printf("error line = %u %s %s\n", g_line, yytext, s);
-}
 

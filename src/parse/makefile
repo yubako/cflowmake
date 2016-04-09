@@ -2,11 +2,13 @@
 
 make_directory  = $(if $(call realpath, $(1)), ,$(shell mkdir -p $(1)))
 YACCWORK=.yaccwork
-YACCDEBUG=-DYYERROR_VERBOSE -DYYDEBUG
+YACCDEBUG=-DYYERROR_VERBOSE -DYYDEBUG -DDEBUG
+#YACCDEBUG=-DYYERROR_VERBOSE -DYYDEBUG 
 
 OBJS  = obj/cl.o
 OBJS += obj/cy.o
 OBJS += obj/libcy.o
+OBJS += obj/psbuff.o
 LIB   = ../lib/libcyl.a
 
 SILENCE=@
@@ -18,18 +20,18 @@ $(LIB) : $(OBJS)
 
 yacc: 
 	$(SILENCE)$(call make_directory, $(YACCWORK))
-	$(SILENCE)bison -v -d c.y -o $(YACCWORK)/cy.c
-	$(SILENCE)flex -o$(YACCWORK)/cl.c c.l
+	$(SILENCE)bison -v -d c.y -o $(YACCWORK)/cy.cpp
+	$(SILENCE)flex -o$(YACCWORK)/cl.cpp c.l
 
 obj/cy.o:  yacc
-	$(SILENCE)gcc $(YACCDEBUG) -I$(YACCWORK) -c -o $@ $(YACCWORK)/cy.c 
+	$(SILENCE)g++ -g $(YACCDEBUG) -include cyparse.h -include cytypes.h -Iinclude -I$(YACCWORK) -c -o $@ $(YACCWORK)/cy.cpp
 
 obj/cl.o:  yacc
-	$(SILENCE)gcc $(YACCDEBUG) -I$(YACCWORK) -c -o $@ $(YACCWORK)/cl.c
+	$(SILENCE)g++ -g $(YACCDEBUG) -include cyparse.h -include cytypes.h -Iinclude -I$(YACCWORK) -c -o $@ $(YACCWORK)/cl.cpp
 
-obj/%.o : %.c
+obj/%.o : %.cpp
 	@echo compiling $<
-	$(SILENCE)gcc -Iinclude -I$(YACCWORK) -c -o $@ $<
+	$(SILENCE)g++ -g -Iinclude -I$(YACCWORK) -c -o $@ $<
 	
 
 clean:

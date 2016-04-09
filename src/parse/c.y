@@ -1,6 +1,17 @@
 %{
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "cytypes.h"
+#include "psbuff.h"
+
+extern unsigned int g_line;
+inline void yyerror(const char *s)
+{
+    printf("error line = %u %s\n", g_line, s);
+}
+
 
 %}
 
@@ -16,6 +27,11 @@
 
 %left '*' 
 
+%union {
+    char* str;
+    Statement*  stmt;
+    Expression* expr;
+}
 %%
 
 
@@ -36,13 +52,25 @@ external_declaration                    : function_definition
     compound_statement     関数実体
 */
 function_definition                     : declaration_specifier  declarator declaration_list compound_statement
+                                        {
+                                        }
                                         |                        declarator declaration_list compound_statement
+                                        {
+                                        }
                                         | declaration_specifier  declarator                  compound_statement
+                                        {
+                                        }
                                         |                        declarator                  compound_statement
+                                        {
+                                        }
                                         ;
 
 declaration                             : declaration_specifier init_declarator_list ';'
+                                        {
+                                        }
                                         | declaration_specifier                      ';'
+                                        {
+                                        }
                                         ;
 
 declaration_list                        : declaration
@@ -50,11 +78,23 @@ declaration_list                        : declaration
                                         ;
 
 declaration_specifier                   : storage_class_specifier declaration_specifier
+                                        {
+                                        }
                                         | storage_class_specifier
+                                        {
+                                        }
                                         | type_specifier          declaration_specifier
+                                        {
+                                        }
                                         | type_specifier
+                                        {
+                                        }
                                         | type_qualifier          declaration_specifier
+                                        {
+                                        }
                                         | type_qualifier
+                                        {
+                                        }
                                         ;
 
 type_specifier                          : type_specifier_keywords
@@ -128,11 +168,19 @@ enumerator                              : identifier
     宣言子
 */
 declarator                              : pointer direct_declarator
+                                        {
+                                        }
                                         |         direct_declarator
+                                        {
+                                        }
                                         ;
 
 direct_declarator                       : identifier 
+                                        {
+                                        }
                                         | '(' declarator ')'
+                                        {
+                                        }
                                         | direct_declarator '[' constant_expression']'
                                         | direct_declarator '['                    ']'
                                         | direct_declarator '(' parameter_type_list ')'
@@ -209,11 +257,29 @@ typedef_name                            : identifier
     式
  */
 statement                               : labeled_statement
+                                        {
+                                            $<stmt>$ = $<stmt>1;
+                                        }
                                         | expression_statement
+                                        {
+                                            $<stmt>$ = $<stmt>1;
+                                        }
                                         | compound_statement
+                                        {
+                                            $<stmt>$ = $<stmt>1;
+                                        }
                                         | select_statement
+                                        {
+                                            $<stmt>$ = $<stmt>1;
+                                        }
                                         | iteration_statement
+                                        {
+                                            $<stmt>$ = $<stmt>1;
+                                        }
                                         | jump_statement
+                                        {
+                                            $<stmt>$ = $<stmt>1;
+                                        }
                                         ;
 
 labeled_statement                       : identifier ':' statement
@@ -222,12 +288,31 @@ labeled_statement                       : identifier ':' statement
                                         ;
 
 expression_statement                    : expression ';'
+                                        {
+                                            Expression* expr = $<expr>1;
+                                            ExpressionStatement* stmt = new ExpressionStatement(g_line, expr);
+                                            $<stmt>$ = stmt;
+                                            dprintf("Expression Statement", "%s\n", stmt->toString());
+                                        }
                                         |            ';'
+                                        {
+                                            $<stmt>$ = new NullStatement();
+                                        }
                                         ;
 
 select_statement                        : IF '(' expression ')' statement
+                                        {
+                                            IfStatement* ifstmt = new IfStatement(g_line, $<expr>3);
+                                            ifstmt->setTrue($<stmt>5);
+                                            dprintf("IfStatement\n", "%s\n", ifstmt->toString());
+                                            //printf("IfStatement %s\n", ifstmt->toString());
+                                        }
                                         | IF '(' expression ')' statement ELSE statement
+                                        {
+                                        }
                                         | SWITCH '(' expression ')' statement
+                                        {
+                                        }
                                         ;
 
 iteration_statement                     : WHILE '(' expression ')' statement
@@ -267,99 +352,426 @@ statement_list                          :                statement
     定数
  */
 constant_expression                     : conditional_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                            dprintf("Constant Expression",  "%s\n", $<expr>1->toString());
+                                        }
                                         ;
 
 conditional_expression                  : logical_or_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                            Expression* expr = $<expr>1;
+                                        }
                                         | logical_or_expression '?' expression ':' conditional_expression
+                                        {
+                                            Expression* expr1 = new Expression(g_line, $<str>2);
+                                            Expression* expr2 = new Expression(g_line, $<str>4);
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling(expr1);
+                                            base->pushSibling($<expr>3);
+                                            base->pushSibling(expr2);
+                                            base->pushSibling($<expr>5);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 logical_or_expression                   : logical_and_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | logical_or_expression OR logical_and_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 logical_and_expression                  : inclusive_or_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | logical_and_expression AND inclusive_or_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 inclusive_or_expression                 : exclusive_or_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | inclusive_or_expression '|' exclusive_or_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 exclusive_or_expression                 : and_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | exclusive_or_expression '^' and_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 and_expression                          : equality_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | and_expression '&' equality_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 equality_expression                     : relational_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | equality_expression EQUAL    relational_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | equality_expression NOTEQUAL relational_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 relational_expression                   : shift_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | relational_expression GT shift_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | relational_expression LT shift_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | relational_expression GE shift_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | relational_expression LE shift_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 shift_expression                        : additive_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                            Expression* expr = $<expr>1;
+                                            dprintf("Shift Expression", "%s\n", expr->toString());
+                                        }
                                         | shift_expression LSHIFT additive_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | shift_expression RSHIFT additive_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 additive_expression                     : multiplicative_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                            Expression* expr = $<expr>1;
+                                            dprintf("Additive Expression", "%s\n", expr->toString());
+                                        }
                                         | additive_expression '+' multiplicative_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | additive_expression '-' multiplicative_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 multiplicative_expression               : cast_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+
+                                            Expression* expr = $<expr>1;
+                                            dprintf("Multiplicativ Expression", "%s\n", expr->toString());
+                                        }
                                         | multiplicative_expression '*' cast_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | multiplicative_expression '/' cast_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         | multiplicative_expression '%' cast_expression
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 cast_expression                         : unary_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | '(' type_name ')' cast_expression
+                                        {
+                                            size_t len = strlen($<str>2);
+                                            char*  str = (char*)malloc(len + 3);
+
+                                            sprintf(str, "(%s)", $<str>2);
+                                            Expression *expr = new Expression(g_line, str);
+                                            $<expr>$ = expr;
+                                        }
                                         ;
 
 unary_expression                        : postfix_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | PP unary_expression
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>1);
+                                            expr->pushSibling($<expr>2);
+                                            $<expr>$ = expr;
+                                        }
                                         | MM unary_expression
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>1);
+                                            expr->pushSibling($<expr>2);
+                                            $<expr>$ = expr;
+                                        }
                                         | unary_operator cast_expression
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>1);
+                                            expr->pushSibling($<expr>2);
+                                            $<expr>$ = expr;
+                                        }
                                         | SIZEOF unary_expression
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>1);
+                                            expr->pushSibling($<expr>2);
+                                            $<expr>$ = expr;
+                                        }
                                         | SIZEOF '(' type_name ')' 
+                                        {
+                                            size_t len = strlen($<str>3);
+                                            char*  str = (char*)malloc(len + 32);
+                                            sprintf(str, "(%s)", $<str>3);
+                                            Expression* expr1 = new Expression(g_line, "sizeof");
+                                            Expression* expr2 = new Expression(g_line, str);
+                                            expr1->pushSibling(expr2);
+                                            $<expr>$ = expr1;
+                                        }
                                         ;
 
 unary_operator                          : '&'
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | '*'
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | '+'
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | '-'
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | '~'
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | '!'
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         ;
 
 postfix_expression                      : primary_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | postfix_expression '[' expression ']'
+                                        {
+                                            Expression* expr1 = new Expression(g_line, "[");
+                                            Expression* expr2 = new Expression(g_line, "]");
+                                            Expression* base  = $<expr>1;
+                                            base->pushSibling(expr1);
+                                            base->pushSibling($<expr>3);
+                                            base->pushSibling(expr2);
+                                            $<expr>$ = base;
+                                        }
                                         | postfix_expression '('                            ')'
+                                        {
+                                            Expression* expr1 = new Expression(g_line, "(");
+                                            Expression* expr2 = new Expression(g_line, ")");
+                                            Expression* base  = $<expr>1;
+                                            base->pushSibling(expr1);
+                                            base->pushSibling(expr2);
+                                            $<expr>$ = base;
+                                        }
                                         | postfix_expression '(' assignment_expression_list ')'
+                                        {
+                                            Expression* expr1 = new Expression(g_line, "(");
+                                            Expression* expr2 = new Expression(g_line, ")");
+                                            Expression* base  = $<expr>1;
+                                            base->pushSibling(expr1);
+                                            base->pushSibling($<expr>3);
+                                            base->pushSibling(expr2);
+                                            $<expr>$ = base;
+                                        }
                                         | postfix_expression DOT   identifier
+                                        {
+                                            Expression* expr1 = new Expression(g_line, $<str>2);
+                                            Expression* expr2 = new Expression(g_line, $<str>3);
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling(expr1);
+                                            base->pushSibling(expr2);
+                                            $<expr>$ = base;
+                                        }
                                         | postfix_expression ARROW identifier
+                                        {
+                                            Expression* expr1 = new Expression(g_line, $<str>2);
+                                            Expression* expr2 = new Expression(g_line, $<str>3);
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling(expr1);
+                                            base->pushSibling(expr2);
+                                            $<expr>$ = base;
+                                        }
                                         | postfix_expression PP
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>2);
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            $<expr>$ = base;
+                                        }
                                         | postfix_expression MM
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>2);
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 primary_expression                      : identifier
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>1);
+                                            $<expr>$ = expr;
+                                        }
                                         | constant
+                                        {
+                                            Expression *expr = new Expression(g_line, $<str>1);
+                                            $<expr>$ = expr;
+                                        }
                                         | string
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>1);
+                                            $<expr>$ = expr;
+                                        }
                                         | '(' expression ')'
+                                        {
+                                            Expression* base = new Expression(g_line, "(");
+                                            Expression* expr = new Expression(g_line, ")");
+                                            base->pushSibling($<expr>2);
+                                            base->pushSibling(expr);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 constant                                : integer_constant
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | character_constant
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | floating_constant
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         ;
 
 /* 
@@ -372,19 +784,53 @@ emuration_constant                      :
 
 
 expression                              : assignment_expression
+                                        {
+                                            $<expr>$ = $<expr>1; 
+                                        }
                                         | expression ',' assignment_expression
+                                        {
+                                            Expression* expr = new Expression(g_line, $<str>3);
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 assignment_expression_list              : assignment_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | assignment_expression_list ',' assignment_expression
+                                        {
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 assignment_expression                   : conditional_expression
+                                        {
+                                            $<expr>$ = $<expr>1;
+                                        }
                                         | unary_expression assignment_operator assignment_expression
+                                        {
+                                            /* operatorを考慮しだすと複雑になるのでexpressionに含める */
+                                            Expression* expr = new Expression(g_line, $<str>2);
+                                            Expression* base = $<expr>1;
+                                            base->pushSibling(expr);
+                                            base->pushSibling($<expr>3);
+                                            $<expr>$ = base;
+                                        }
                                         ;
 
 assignment_operator                     : assignment_operator_keywords
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         | '='
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
                                         ;
 
 %%

@@ -30,6 +30,8 @@ int cflowSrcParse(const char* cSourceFile);
 /* ------------------------------------------------------*/
 int cflowStdinParse();
 
+int yylex (void);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
