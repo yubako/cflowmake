@@ -2,12 +2,15 @@
 #define CYTYPES_SOURCE_LOCATION_H
 
 #include <string.h>
+#include <stdio.h>
 
 class SourceLocation
 {
     private:
         unsigned int _line;
         char         _str[1024];
+
+    protected:
         char         _printbuff[1024];
 
     public:
@@ -31,7 +34,7 @@ class SourceLocation
 
         virtual const char* toString()
         {
-            sprintf(this->_printbuff, "%4u: %s", this->_line, this->_str); 
+            sprintf(this->_printbuff, "%4u: %s", this->_line, this->_str);
             return this->_printbuff;
         }
 

@@ -125,7 +125,7 @@ sizeof      { yylval.str = strdup(yytext); return SIZEOF;    }
 "!="        { yylval.str = strdup(yytext); return NOTEQUAL; }
 
 
-\"[^\"]+\"  { yylval.str = strdup(yytext); return string;      }
+L?\"(\\.|[^\\"])*\" { yylval.str = strdup(yytext); return string;      }
 
 %{
 /*
@@ -183,4 +183,7 @@ sizeof      { yylval.str = strdup(yytext); return SIZEOF;    }
                                 }
 %%
 
-
+void yyerror(const char *s)
+{
+    printf("error line = %u: %s (%s)\n", g_line, yylval.str, s);
+}
