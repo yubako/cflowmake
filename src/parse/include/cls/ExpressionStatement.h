@@ -30,6 +30,11 @@ class ExpressionStatement : public Statement
             sprintf(this->_printbuff, "%s", this->getExpression()->toString());
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 

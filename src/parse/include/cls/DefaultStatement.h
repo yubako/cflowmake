@@ -27,6 +27,11 @@ class DefaultStatement: public Statement
             sprintf(this->_printbuff, "%s", this->getStatement()->toString());
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 

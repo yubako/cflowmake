@@ -13,6 +13,8 @@
 #include "cls/JumpStatement.h"
 #include "cls/DefaultStatement.h"
 #include "cls/IterationStatement.h"
+#include "cls/TranslationUnit.h"
+
 
 #endif
 

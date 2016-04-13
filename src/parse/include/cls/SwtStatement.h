@@ -39,6 +39,11 @@ class SwtStatement : public Statement
             return this->_printbuff;
         }
 
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
+
 };
 
 
@@ -77,6 +82,11 @@ class CaseStatement : public Statement
             len += sprintf(this->_printbuff + len, "%s", this->_stmt->toString());
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 
 };
 

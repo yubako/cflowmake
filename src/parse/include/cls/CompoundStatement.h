@@ -88,6 +88,11 @@ class CompoundStatement : public Statement
             len += sprintf(this->_printbuff + len, "}\n");
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 #endif

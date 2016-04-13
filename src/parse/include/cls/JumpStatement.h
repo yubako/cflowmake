@@ -30,6 +30,11 @@ class GotoStatement : public Statement
             sprintf(this->_printbuff, "goto: %s", this->_identifier);
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 class LabeledStatement : public Statement
@@ -69,6 +74,10 @@ class LabeledStatement : public Statement
             return this->_printbuff;
         }
 
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 class BreakStatement: public Statement
@@ -86,6 +95,11 @@ class BreakStatement: public Statement
             sprintf(this->_printbuff, "break;");
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 class ContinueStatement: public Statement
@@ -103,6 +117,11 @@ class ContinueStatement: public Statement
             sprintf(this->_printbuff, "continue;");
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 class ReturnStatement : public Statement
@@ -137,7 +156,11 @@ class ReturnStatement : public Statement
             return this->_printbuff;
         }
 
-};
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 
+};
 
 #endif

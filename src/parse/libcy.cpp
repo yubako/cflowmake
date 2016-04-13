@@ -6,9 +6,10 @@
 #include "cyparse.h"
 #include "cytypes.h"
 
-
 extern int yyparse();
 extern int yyrestart(FILE* fp);
+
+TranslationUnit *tunit;
 
 static int cparse(FILE* fp)
 {
@@ -19,8 +20,8 @@ static int cparse(FILE* fp)
 
     yyrestart(fp);
     g_line = 1;
-    isFault = yyparse();
 
+    isFault = yyparse();
 
     if ( isFault )
     {
@@ -28,16 +29,6 @@ static int cparse(FILE* fp)
     }
     return 0;
 }
-#if 0
-static int cparse_cpp(const char* path)
-{
-    FlexLexer* lexer = new yyFlexLexer();
-    std::ifstream in(path, std::ios::binary);
-    lexer->switch_streams(&in);
-    lexer->parse();
-    return 0;
-}
-#endif
 
 int cflowSrcParse(const char* cSourceFile)
 {
@@ -48,8 +39,9 @@ int cflowSrcParse(const char* cSourceFile)
         return -2;
     }
 
+    // c.y使用TranslationUnit
+    tunit  = TranslationUnit::factory(cSourceFile);
     isFault = cparse(fp);
-    //isFault = cparse_cpp(cSourceFile);
     fclose(fp);
 
     return isFault;

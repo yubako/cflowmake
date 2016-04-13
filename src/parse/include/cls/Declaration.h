@@ -2,6 +2,7 @@
 #define CYTYPES_DECLARATION_H
 
 #include "SourceLocation.h"
+#include "Statement.h"
 
 
 class Declaration : public SourceLocation
@@ -55,6 +56,50 @@ class Declaration : public SourceLocation
         {
             return 0;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
+};
+
+class FunctionDefinition : public Declaration
+{
+    private:
+        const char* _funcname;
+        Statement*  _stmt;
+
+    public:
+        FunctionDefinition(unsigned int line, const char* funcname, Statement* stmt)
+            : Declaration(line, "function")
+        {
+            this->_funcname = funcname;
+            this->_stmt = stmt;
+        }
+        virtual ~FunctionDefinition()
+        {
+        }
+
+        Statement* getStatement()
+        {
+            return this->_stmt;
+        }
+
+        const char* getName()
+        {
+            return this->_funcname;
+        }
+
+        const char* toString()
+        {
+            sprintf(this->_printbuff, "%s", this->getName());
+            return this->_printbuff;
+        }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 
@@ -75,6 +120,11 @@ class NullDeclaration : public Declaration
         {
             return 1;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 #endif

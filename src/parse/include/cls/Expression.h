@@ -1,9 +1,9 @@
 #ifndef CYTYPES_EXPRESSION_H
 #define CYTYPES_EXPRESSION_H
 
-
 #include "SourceLocation.h"
 
+class CyVisitor;
 class NullExpression;
 class Expression : public SourceLocation
 {
@@ -57,6 +57,11 @@ class Expression : public SourceLocation
         {
             return 0;
         }
+
+        /**
+         * @override 
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 class NullExpression : public Expression
@@ -75,6 +80,10 @@ class NullExpression : public Expression
             return 1;
         }
 
+        /**
+         * @override 
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 

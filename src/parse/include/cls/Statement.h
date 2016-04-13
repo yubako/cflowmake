@@ -4,6 +4,7 @@
 #include "SourceLocation.h"
 #include "Expression.h"
 
+class CyVisitor;
 class Statement : public SourceLocation
 {
     private:
@@ -13,7 +14,6 @@ class Statement : public SourceLocation
         Statement*      _sibling;
 
     public:
-
         Statement(unsigned int line, const char* str)
             : SourceLocation(line, str)
         {
@@ -65,6 +65,11 @@ class NullStatement: public Statement
         {
             return 1;
         }
+
+        /**
+         * @override 
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 

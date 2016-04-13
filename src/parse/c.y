@@ -8,6 +8,7 @@
 
 extern unsigned int g_line;
 extern void yyerror(const char *s);
+extern TranslationUnit* tunit;
 
 %}
 
@@ -25,18 +26,37 @@ extern void yyerror(const char *s);
 
 %union {
     char* str;
-    Statement*   stmt;
-    Expression*  expr;
-    Declaration* decl;
+    SourceLocation*  sloc;
+    Statement*       stmt;
+    Expression*      expr;
+    Declaration*     decl;
+    TranslationUnit* tunt;
 }
 %%
 
 translation_unit                        : external_declaration
+                                        {
+                                            tunit->pushDeclaration($<decl>1);
+                                            $<tunt>$ = tunit;
+                                            dprintf("Translation Unit1", "%s\n", tunit->toString());
+                                        }
                                         | translation_unit external_declaration
+                                        {
+                                            TranslationUnit* tunit = $<tunt>1;
+                                            tunit->pushDeclaration($<decl>2);
+                                            $<tunt>$ = tunit;
+                                            dprintf("Translation Unit2", "%s\n", tunit->toString());
+                                        }
                                         ;
 
 external_declaration                    : function_definition
+                                        {
+                                            $<decl>$ = $<decl>1;
+                                        }
                                         | declaration
+                                        {
+                                            $<decl>$ = $<decl>1;
+                                        }
                                         ;
 
 /* 
@@ -49,22 +69,36 @@ external_declaration                    : function_definition
 */
 function_definition                     : declaration_specifier  declarator declaration_list compound_statement
                                         {
+                                            char* funcname;
                                             Declaration* decl = $<decl>3;
-                                            dprintf("function def1", "%s, %s, %s\n", $<str>1, $<str>2, decl->toString());
+                                            funcname = psbuff_realloc($<str>1,  $<str>2);
+                                            funcname = psbuff_realloc(funcname, decl->toString());
+                                            FunctionDefinition *fdef = new FunctionDefinition(decl->getLine(), funcname, $<stmt>4);
+                                            $<decl>$ = fdef;
+                                            dprintf("function def1", "%s %s %s\n", $<str>1, $<str>2, decl->toString());
                                         }
                                         |                        declarator declaration_list compound_statement
                                         {
+                                            char* funcname;
                                             Declaration* decl = $<decl>2;
-                                            dprintf("function def2", "%s, %s\n", $<str>1, decl->toString());
+                                            funcname = psbuff_realloc($<str>1, decl->toString());
+                                            FunctionDefinition* fdef = new FunctionDefinition(decl->getLine(), funcname, $<stmt>3);
+                                            $<decl>$ = fdef;
+                                            dprintf("function def2", "%s %s\n", $<str>1, decl->toString());
                                         }
                                         | declaration_specifier  declarator                  compound_statement
                                         {
-                                            Statement* stmt = $<stmt>3;
-                                            dprintf("function def3", "%s, %s\n", $<str>1, $<str>2);
-                                            dprintf("function dec", "%s\n", stmt->toString());
+                                            char* funcname;
+                                            funcname = psbuff_realloc($<str>1, $<str>2);
+                                            FunctionDefinition* fdef = new FunctionDefinition($<stmt>3->getLine(), funcname, $<stmt>3);
+                                            $<decl>$ = fdef;
+                                            dprintf("function def3", "%s %s\n", $<str>1, $<str>2);
                                         }
                                         |                        declarator                  compound_statement
                                         {
+                                            // このLineだけdeclaratorを文字列で扱っている都合上断念。。。
+                                            FunctionDefinition* fdef = new FunctionDefinition(g_line, $<str>1, $<stmt>2);
+                                            $<decl>$ = fdef;
                                             dprintf("function def4", "%s\n", $<str>1);
                                         }
                                         ;
@@ -708,21 +742,21 @@ expression_statement                    : expression ';'
 
 select_statement                        : IF '(' expression ')' statement
                                         {
-                                            IfStatement* ifstmt = new IfStatement(g_line, $<expr>3);
+                                            IfStatement* ifstmt = new IfStatement($<expr>3->getLine(), $<expr>3);
                                             ifstmt->setTrue($<stmt>5);
                                             $<stmt>$ = ifstmt;
                                             dprintf("IfStatement", "%s\n", ifstmt->toString());
                                         }
                                         | IF '(' expression ')' statement ELSE statement
                                         {
-                                            IfStatement* ifstmt = new IfStatement(g_line, $<expr>3);
+                                            IfStatement* ifstmt = new IfStatement($<expr>3->getLine(), $<expr>3);
                                             ifstmt->setTrue($<stmt>5);
                                             ifstmt->setElse($<stmt>7); $<stmt>$ = ifstmt;
                                             dprintf("IfStatement", "%s\n", ifstmt->toString());
                                         }
                                         | SWITCH '(' expression ')' statement
                                         {
-                                            SwtStatement* swt = new SwtStatement(g_line, $<expr>3, $<stmt>5);
+                                            SwtStatement* swt = new SwtStatement($<expr>3->getLine(), $<expr>3, $<stmt>5);
                                             $<stmt>$ = swt;
                                             dprintf("SwitchStatement", "%s\n", swt->toString());
                                         }
@@ -730,21 +764,21 @@ select_statement                        : IF '(' expression ')' statement
 
 iteration_statement                     : WHILE '(' expression ')' statement
                                         {
-                                            WhileStatement* wstmt = new WhileStatement(g_line, $<expr>3, $<stmt>5);
+                                            WhileStatement* wstmt = new WhileStatement($<expr>3->getLine(), $<expr>3, $<stmt>5);
                                             $<stmt>$ = wstmt;
                                             dprintf("WhileStatement", "%s\n", wstmt->toString());
 
                                         }
                                         | DO statement WHILE '(' expression ')' ';'
                                         {
-                                            DoStatement* dstmt = new DoStatement(g_line, $<stmt>2, $<expr>5);
+                                            DoStatement* dstmt = new DoStatement($<expr>5->getLine(), $<stmt>2, $<expr>5);
                                             $<stmt>$ = dstmt;
                                             dprintf("DoStatement", "%s\n", dstmt->toString());
                                         }
                                         | FOR '(' expression ';' expression ';' expression ')' statement
                                         {
                                             ForStatement *fstmt = new ForStatement(
-                                                                    g_line, 
+                                                                    $<expr>3->getLine(), 
                                                                     $<expr>3,
                                                                     $<expr>5,
                                                                     $<expr>7,
@@ -755,7 +789,7 @@ iteration_statement                     : WHILE '(' expression ')' statement
                                         | FOR '(' expression ';' expression ';'            ')' statement
                                         {
                                             ForStatement *fstmt = new ForStatement(
-                                                                    g_line, 
+                                                                    $<expr>3->getLine(),
                                                                     $<expr>3,
                                                                     $<expr>5,
                                                                     new NullExpression(),
@@ -766,7 +800,7 @@ iteration_statement                     : WHILE '(' expression ')' statement
                                         | FOR '(' expression ';'            ';' expression ')' statement
                                         {
                                             ForStatement *fstmt = new ForStatement(
-                                                                    g_line, 
+                                                                    $<expr>3->getLine(),
                                                                     $<expr>3,
                                                                     new NullExpression(),
                                                                     $<expr>6,
@@ -777,7 +811,7 @@ iteration_statement                     : WHILE '(' expression ')' statement
                                         | FOR '(' expression ';'            ';'            ')' statement
                                         {
                                             ForStatement *fstmt = new ForStatement(
-                                                                    g_line, 
+                                                                    $<expr>3->getLine(),
                                                                     $<expr>3,
                                                                     new NullExpression(),
                                                                     new NullExpression(),
@@ -788,7 +822,7 @@ iteration_statement                     : WHILE '(' expression ')' statement
                                         | FOR '('            ';' expression ';' expression ')' statement
                                         {
                                             ForStatement *fstmt = new ForStatement(
-                                                                    g_line, 
+                                                                    $<expr>4->getLine(),
                                                                     new NullExpression(),
                                                                     $<expr>4,
                                                                     $<expr>6,
@@ -799,7 +833,7 @@ iteration_statement                     : WHILE '(' expression ')' statement
                                         | FOR '('            ';' expression ';'            ')' statement
                                         {
                                             ForStatement *fstmt = new ForStatement(
-                                                                    g_line, 
+                                                                    $<expr>4->getLine(),
                                                                     new NullExpression(),
                                                                     $<expr>4,
                                                                     new NullExpression(),
@@ -810,7 +844,7 @@ iteration_statement                     : WHILE '(' expression ')' statement
                                         | FOR '('            ';'            ';' expression ')' statement
                                         {
                                             ForStatement *fstmt = new ForStatement(
-                                                                    g_line, 
+                                                                    $<expr>5->getLine(),
                                                                     new NullExpression(),
                                                                     new NullExpression(),
                                                                     $<expr>5,
@@ -869,8 +903,8 @@ jump_statement                          : GOTO identifier ';'
 */
 compound_statement                      : '{' declaration_list statement_list '}'
                                         {
-                                            CompoundStatement* cstmt = new CompoundStatement(g_line);
                                             Statement*         stmt  = $<stmt>3;
+                                            CompoundStatement* cstmt = new CompoundStatement(stmt->getLine());
                                             cstmt->pushDeclaration($<decl>2);
                                             cstmt->pushStatement(stmt);
                                             $<stmt>$ = cstmt;
@@ -878,14 +912,14 @@ compound_statement                      : '{' declaration_list statement_list '}
                                         }
                                         | '{' declaration_list                '}'
                                         {
-                                            CompoundStatement* cstmt = new CompoundStatement(g_line);
+                                            CompoundStatement* cstmt = new CompoundStatement($<decl>2->getLine());
                                             cstmt->pushDeclaration($<decl>2);
                                             $<stmt>$ = cstmt;
                                             dprintf("Compound Statement2", "\n%s--\n", cstmt->toString());
                                         }
                                         | '{'                  statement_list '}'
                                         {
-                                            CompoundStatement* cstmt = new CompoundStatement(g_line);
+                                            CompoundStatement* cstmt = new CompoundStatement($<stmt>2->getLine());
                                             cstmt->pushStatement($<stmt>2);
                                             $<stmt>$ = cstmt;
                                             dprintf("Compound Statement3", "\n%s--\n", cstmt->toString());

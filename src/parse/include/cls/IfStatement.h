@@ -19,8 +19,6 @@ class IfStatement : public Statement
             this->_exp      = exp;
             this->_trueStmt = new NullStatement();
             this->_elseStmt = new NullStatement();
-
-//            this->setStatementType(Statement::STMTTYPE_IF);
         }
         virtual ~IfStatement() { 
             delete this->_exp;
@@ -43,12 +41,12 @@ class IfStatement : public Statement
             return this->_exp;
         }
 
-        const Statement* getTrue()
+        Statement* getTrue()
         {
             return this->_trueStmt;
         }
 
-        const Statement* getElse()
+        Statement* getElse()
         {
             return this->_elseStmt;
         }
@@ -61,6 +59,12 @@ class IfStatement : public Statement
             len += sprintf(this->_printbuff + len, "Else : %s\n", this->_elseStmt->toString());
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
+
 
 };
 

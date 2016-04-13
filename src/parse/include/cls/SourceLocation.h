@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
+class CyVisitor;
 class SourceLocation
 {
     private:
@@ -37,6 +38,11 @@ class SourceLocation
             sprintf(this->_printbuff, "%4u: %s", this->_line, this->_str);
             return this->_printbuff;
         }
+
+        /**
+         * @override 
+         */
+        virtual void accept(CyVisitor* visitor) = 0;
 
 };
 

@@ -9,6 +9,10 @@ OBJS  = obj/cl.o
 OBJS += obj/cy.o
 OBJS += obj/libcy.o
 OBJS += obj/psbuff.o
+OBJS += obj/statement.o
+OBJS += obj/expression.o
+OBJS += obj/declaration.o
+OBJS += obj/translationunit.o
 LIB   = ../lib/libcyl.a
 
 SILENCE=@

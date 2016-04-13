@@ -38,6 +38,11 @@ class WhileStatement : public Statement
             len += sprintf(this->_printbuff + len, "%s", this->getStatement()->toString());
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 class ForStatement : public Statement
@@ -97,6 +102,11 @@ class ForStatement : public Statement
             return this->_printbuff;
         }
 
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
+
 };
 
 
@@ -135,6 +145,11 @@ class DoStatement : public Statement
             len += sprintf(this->_printbuff + len, "%s", this->getExpression()->toString());
             return this->_printbuff;
         }
+
+        /**
+         * @override
+         */
+        virtual void accept(CyVisitor* visitor);
 };
 
 
