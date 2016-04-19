@@ -29,6 +29,7 @@ void CyFlowVisitor::leave(FunctionDefinition* decl)
     CyFlowDotNode *node = CyFlowDotNode::factoryVertexNode();
     CyFlowDotEdge* edge = CyFlowDotEdge::factory(this->_graph->getCurrentNode(), node->getNodeName());
     this->_graph->append(edge);
+    this->_graph->setCurrentNode(node->getNodeName());
 }
 
 int CyFlowVisitor::visit(TranslationUnit* stmt)
@@ -74,7 +75,7 @@ int CyFlowVisitor::visit(IfStatement* stmt)
 
     /* 分岐頂点追加 */
     vertex = CyFlowDotNode::factoryVertexNode();
-    edge   = CyFlowDotEdge::factory(this->_graph->getCurrentNode(), vertex->getNodeName());
+    edge   = CyFlowDotEdge::factory(node->getNodeName(), vertex->getNodeName());
     edge->setSame();
     this->_graph->append(edge);
 
@@ -102,12 +103,15 @@ int CyFlowVisitor::visit(IfStatement* stmt)
     {
         edge = CyFlowDotEdge::factory(confluence->getNodeName(), this->_graph->getCurrentNode());
         edge->setSame();
+        edge->setProperty("dir", "back");
         this->_graph->append(edge);
     }
     else
     {
         edge = CyFlowDotEdge::factory(confluence->getNodeName(), this->_graph->getCurrentNode());
         edge->setSame();
+        edge->setProperty("dir", "back");
+        printf("graph edge dir %s\n", confluence->getNodeName());
         this->_graph->append(edge);
     }
 
