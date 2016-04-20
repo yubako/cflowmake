@@ -106,6 +106,6 @@ TEST(visit, flowVisitor)
     TranslationUnit* unit = TranslationUnit::getInstance();
     unit->accept(visitor);
     printf("hogehoge\n\n\n\n");
-    visitor->save(NULL);
+    visitor->save("graph.dot");
 }
 

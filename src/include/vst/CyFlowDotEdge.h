@@ -83,7 +83,7 @@ class CyFlowDotEdge
                 for ( std::map<std::string, std::string>::iterator it = this->_property.begin();
                         it != this->_property.end(); it ++)
                 {
-                    len += sprintf(this->_str + len, "    %s = \"%s\",", it->first.c_str(), it->second.c_str());
+                    len += sprintf(this->_str + len, " %s = \"%s\",", it->first.c_str(), it->second.c_str());
                 }
 
                 len += sprintf(this->_str + len, "]");

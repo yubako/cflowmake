@@ -68,18 +68,6 @@ class CyFlowDotNode
             return len;
         }
 
-        static unsigned int nodeDefinition(char* buff)
-        {
-            unsigned int len = 0;
-            std::vector<CyFlowDotNode*>::iterator it;
-            for ( it = CyFlowDotNode::_node_all.begin(); it != CyFlowDotNode::_node_all.end(); it++ )
-            {
-                CyFlowDotNode* node = (*it);
-                len += sprintf(buff + len, "%-10s %s;\n", node->getNodeName(), node->toString());
-            }
-            return len;
-        }
-
         const char* getNodeName()
         {
             return this->_name;
@@ -119,7 +107,7 @@ class CyFlowDotNode
         const char* toString()
         {
             unsigned int len = 0;
-            len += sprintf(this->_str + len, "[");
+            len += sprintf(this->_str + len, "%-10s [", this->getNodeName());
             for ( std::map<std::string, std::string>::iterator it = this->_property.begin();
                     it != this->_property.end(); it ++)
             {
@@ -127,7 +115,7 @@ class CyFlowDotNode
             }
 
             len += sprintf(this->_str + len, "label = \"%s\"" , this->_label);
-            len += sprintf(this->_str + len, "]");
+            len += sprintf(this->_str + len, "]\n");
 
             return this->_str;
         }

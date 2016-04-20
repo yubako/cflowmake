@@ -15,7 +15,15 @@ class CyFlowVisitor : public CyVisitor
     private:
         std::vector<CyFlowDotGraph*>    _graphs;
         CyFlowDotGraph*                 _graph;
+        CyFlowPath*                     _path;
         const char*                     _src;
+
+        CyFlowPath* pathSwitch(CyFlowPath* path)
+        {
+            CyFlowPath* path_old = this->_path;
+            this->_path = path;
+            return path_old;
+        }
 
     public:
         CyFlowVisitor() { }

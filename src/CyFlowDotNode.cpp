@@ -67,6 +67,8 @@ CyFlowDotNode* CyFlowDotNode::factoryVertexNode()
     char str[256];
     CyFlowDotNode* node = new CyFlowDotNode();
     node->setProperty("shape", "point");
+    node->setProperty("width", "0.1");
+    node->setProperty("height", "0.1");
     return node;
 }
 
