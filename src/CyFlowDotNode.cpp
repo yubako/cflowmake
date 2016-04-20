@@ -18,6 +18,12 @@ CyFlowDotNode* CyFlowDotNode::factory()
 {
     CyFlowDotNode* node = new CyFlowDotNode();
     return node;
+}
+CyFlowDotNode* CyFlowDotNode::factory(const char* str)
+{
+    CyFlowDotNode* node = new CyFlowDotNode();
+    node->setLabel(str);
+    return node;
 
 }
 CyFlowDotNode* CyFlowDotNode::factory(ExpressionStatement* stmt)
@@ -33,12 +39,15 @@ CyFlowDotNode* CyFlowDotNode::factory(ExpressionStatement* stmt)
 
 CyFlowDotNode* CyFlowDotNode::factory(IfStatement* stmt)
 {
-    char str[256];
+    //char str[256];
     CyFlowDotNode* node = new CyFlowDotNode();
 
-    sprintf(str, "%d: IF( %s )", stmt->getLine(), stmt->toString());
-    node->setLabel(str);
+    //sprintf(str, "%d: IF( %s )", stmt->getLine(), stmt->toString());
+    //node->setLabel(str);
     node->setProperty("shape", "diamond");
+    node->setProperty("style", "filled");
+    node->setProperty("width", "1");
+    node->setProperty("height", "0.3");
 
     return node;
 }
@@ -47,6 +56,9 @@ CyFlowDotNode* CyFlowDotNode::factoryConfluenceNode()
 {
     CyFlowDotNode* node = new CyFlowDotNode();
     node->setProperty("shape", "diamond");
+    node->setProperty("style", "filled");
+    node->setProperty("width", "1.0");
+    node->setProperty("height", "0.3");
 
     return node;
 }

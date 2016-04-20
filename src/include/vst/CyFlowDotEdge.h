@@ -102,6 +102,33 @@ class CyFlowDotEdge
             this->_same = 1;
         }
 
+        void setLabel(const char* str)
+        {
+            unsigned int i;
+            size_t len;
+            char  buffer[128] = {0};
+            char* ptr = buffer;
+            len = strlen(str);
+
+            for ( i = 0; i < len; i++ ) 
+            {
+                if ( *(str + i) == '"' )
+                {
+                    *ptr++ = '\'';
+                }
+                else if ( *(str + i) == '\\')
+                {
+                    *ptr++ = '\\';
+                    *ptr++ = '\\';
+                }else
+                {
+                    *ptr++ = *(str + i);
+                }
+
+            }
+            this->setProperty("label", buffer);
+        }
+
 };
 
 

@@ -26,7 +26,7 @@ class CyFlowPath
 
             if ( node ) 
             {
-                this->moveToSameNode(node);
+                this->moveToSameNode(node)->setProperty("dir", "none");
             }
         }
         ~CyFlowPath()
@@ -45,13 +45,14 @@ class CyFlowPath
             return this->_edges.at(this->_edges.size() - 1);
         }
 
-        void push(CyFlowDotNode* node)
+        CyFlowDotEdge* push(CyFlowDotNode* node)
         {
             CyFlowDotEdge* edge = CyFlowDotEdge::factory(this->getCurrentNode(), node->getNodeName());
             edge->setProperty("weight", "2");
             this->_edges.push_back(edge);
             this->_nodes.push_back(node);
             this->_cur_node = node->getNodeName();
+            return edge;
         }
 
         const char* getCurrentNode()
@@ -123,7 +124,7 @@ class CyFlowDotGraph
             return path;
         }
 
-        void saveDotFile(FILE* fp);
+        void saveDotFile(const char* fpath);
 };
 
 

@@ -21,10 +21,11 @@ int FunctionDefinition::accept(CyVisitor* visitor)
         return CyVisitor::VISIT_BREAK;
 
     this->getStatement()->accept(visitor);
+    visitor->leave(this);
+
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
-    visitor->leave(this);
     return ope;
 }
 

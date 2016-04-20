@@ -10,6 +10,8 @@ HEADDIR=-Iinclude
 OBJ_DIR = ./obj
 SRCS    = $(wildcard *.cpp)
 OBJS    = $(addprefix $(OBJ_DIR)/, $(notdir $(SRCS:.cpp=.o)))
+OBJS   += $(OBJ_DIR)/cy.o
+OBJS   += $(OBJ_DIR)/cl.o
 
 LIB_DIR = ./lib
 LIB     = $(LIB_DIR)/libcyl.a
@@ -25,14 +27,15 @@ $(LIB) : $(OBJS)
 
 yacc: 
 	@[ -d $(YACCWORK) ]; mkdir -p $(YACCWORK)
-	@[ -d $(OBJ_DIR)  ]; mkdir -p $(OBJ_DIR)
 	$(SILENCE)bison -v -d c.y -o $(YACCWORK)/cy.cpp
 	$(SILENCE)flex -o$(YACCWORK)/cl.cpp c.l
 
 $(OBJ_DIR)/cy.o:  yacc
+	@[ -d $(OBJ_DIR)  ]; mkdir -p $(OBJ_DIR)
 	$(SILENCE)g++ -g $(YACCDEBUG) -include pars/cyparse.h -include pars/cytypes.h $(HEADDIR) -I$(YACCWORK) -c -o $@ $(YACCWORK)/cy.cpp
 
 $(OBJ_DIR)/cl.o:  yacc
+	@[ -d $(OBJ_DIR)  ]; mkdir -p $(OBJ_DIR)
 	$(SILENCE)g++ -g $(YACCDEBUG) -include pars/cyparse.h -include pars/cytypes.h $(HEADDIR) -I$(YACCWORK) -c -o $@ $(YACCWORK)/cl.cpp
 
 $(OBJ_DIR)/%.o : %.cpp

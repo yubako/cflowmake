@@ -17,11 +17,14 @@ int CyFlowVisitor::visit(FunctionDefinition* decl)
 
     /* 起点を作成 */
     this->_path = this->_graph->createPath(NULL);
+
+    printf("visit function %s\n", decl->toString());
     return CyVisitor::VISIT_CONTINUE;
 }
 
 void CyFlowVisitor::leave(FunctionDefinition* decl)
 {
+    printf("leave function %s\n", decl->toString());
     /* 終点を作成 */
     this->_path->close(NULL);
 }
@@ -57,11 +60,13 @@ int CyFlowVisitor::visit(ExpressionStatement* stmt)
 int CyFlowVisitor::visit(IfStatement* stmt)
 {
     int ope;
+    CyFlowDotEdge *edge;
     CyFlowDotNode *node, *confluence;
     CyFlowPath    *pathTrue, *pathElse;
     
     node = CyFlowDotNode::factory(stmt);
-    this->_path->push(node);
+    edge = this->_path->push(node);
+    edge->setProperty("label", stmt->toString());
 
     /* true */
     ope = stmt->getTrue()->accept(this);
@@ -143,13 +148,11 @@ int CyFlowVisitor::visit(CaseStatement* stmt)
 
 void CyFlowVisitor::save(const char* fpath)
 {
-    FILE* fp = fopen(fpath, "w");
     std::vector<CyFlowDotGraph*>::iterator it;
     for ( it = this->_graphs.begin(); it != this->_graphs.end(); it++ )
     {
         CyFlowDotGraph* graph = *it;
-        graph->saveDotFile(fp);
+        graph->saveDotFile(fpath);
     }
-    fclose(fp);
 }
 

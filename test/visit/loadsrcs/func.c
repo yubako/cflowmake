@@ -19,11 +19,10 @@ int aafunctionName(int hoge)
 
     return 10;
 }
-/*
 
-void func(int hoge)
+void func2()
 {
-    if ( a == 0 ) 
+    if ( (a == 0) && b == 2 ) 
     {
         printf("hogehoge\n");
     }
@@ -35,4 +34,36 @@ void func(int hoge)
     printf("ho\n");
 }
 
-*/
+
+
+void funchogehoge(int hoge)
+{
+    if ( ( a == 0 ) 
+            && ( b = 1)
+       )
+    {
+        printf("hogehoge\n");
+    }
+    else 
+    {
+        printf("geho\n");
+    }
+
+    printf("ho\n");
+}
+
+void func3()
+{
+    if ( (a == 0) && b == 2 ) 
+    {
+        printf("hogehoge\n");
+    }
+    else 
+    {
+        printf("geho\n");
+    }
+
+    printf("ho\n");
+}
+
+

@@ -35,6 +35,7 @@ class CyFlowDotNode
         virtual ~CyFlowDotNode() {}
 
         static CyFlowDotNode* factory();
+        static CyFlowDotNode* factory(const char* str);
         static CyFlowDotNode* factory(ExpressionStatement* stmt);
         static CyFlowDotNode* factory(IfStatement* stmt);
         static CyFlowDotNode* factory(ReturnStatement* stmt);
