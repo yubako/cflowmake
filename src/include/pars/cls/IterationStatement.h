@@ -34,8 +34,7 @@ class WhileStatement : public Statement
         const char* toString()
         {
             unsigned int len = 0;
-            len += sprintf(this->_printbuff + len, "while : %s\n", this->getExpression()->toString());
-            len += sprintf(this->_printbuff + len, "%s", this->getStatement()->toString());
+            len += sprintf(this->_printbuff + len, "while(%s)", this->getExpression()->toString());
             return this->_printbuff;
         }
 
@@ -94,11 +93,10 @@ class ForStatement : public Statement
         const char* toString()
         {
             unsigned int len = 0;
-            len += sprintf(this->_printbuff + len, "for(%s; %s; %s)\n",
+            len += sprintf(this->_printbuff + len, "for(%s; %s; %s)",
                     this->getInitExpression()->toString(),
                     this->getCondExpression()->toString(),
                     this->getLoopExpression()->toString());
-            len += sprintf(this->_printbuff + len, "%s", this->getStatement()->toString());
             return this->_printbuff;
         }
 

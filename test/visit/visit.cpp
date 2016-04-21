@@ -84,28 +84,42 @@ extern int yydebug;
 
 TEST(visit, walkthrow)
 {
-    const char* path = "loadsrcs/func.c";
-    FuncVisitor* visitor = new FuncVisitor();
-
-    EXPECT_EQ( 0 ,cflowSrcParse(path));
-
-    TranslationUnit* unit = TranslationUnit::getInstance();
-    printf("hogehoge\n\n\n\n");
-    unit->accept(visitor);
+//    const char* path = "loadsrcs/func.c";
+//    FuncVisitor* visitor = new FuncVisitor();
+//
+//    EXPECT_EQ( 0 ,cflowSrcParse(path));
+//
+//    TranslationUnit* unit = TranslationUnit::getInstance();
+//    printf("hogehoge\n\n\n\n");
+//    unit->accept(visitor);
 }
 
 
-TEST(visit, flowVisitor)
-{
+//TEST(visit, flowVisitorIfstmt)
+//{
+//    const char* path = "loadsrcs/for.c";
+//    CyFlowVisitor* visitor = new CyFlowVisitor();
+//
+//    EXPECT_EQ( 0 ,cflowSrcParse(path));
+//
+//    TranslationUnit* unit = TranslationUnit::getInstance();
+//    unit->accept(visitor);
+//    visitor->save("func.dot");
+//    unit->deleteInstance();
+//    delete visitor;
+//}
 
-    const char* path = "loadsrcs/func.c";
+TEST(visit, flowVisitorFor)
+{
+    const char* path = "loadsrcs/stacktracer.c";
     CyFlowVisitor* visitor = new CyFlowVisitor();
 
-    EXPECT_EQ( 0 ,cflowSrcParse(path));
+    ASSERT_EQ( 0 ,cflowSrcParse(path));
 
     TranslationUnit* unit = TranslationUnit::getInstance();
     unit->accept(visitor);
-    printf("hogehoge\n\n\n\n");
-    visitor->save("graph.dot");
+    visitor->save("dots/");
+    unit->deleteInstance();
+    delete visitor;
 }
 

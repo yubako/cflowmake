@@ -18,10 +18,6 @@ class TranslationUnit
             this->_src     = src;
         }
 
-        virtual ~TranslationUnit()
-        {
-        }
-
         void pushSibling(TranslationUnit* unit)
         {
             TranslationUnit* t = this;
@@ -33,6 +29,9 @@ class TranslationUnit
         }
 
     public:
+        virtual ~TranslationUnit()
+        {
+        }
 
         static TranslationUnit* factory(const char* src)
         {
@@ -51,6 +50,13 @@ class TranslationUnit
         static TranslationUnit* getInstance()
         {
             return TranslationUnit::instance;
+        }
+
+        void deleteInstance()
+        {
+            if ( TranslationUnit::instance )
+                delete TranslationUnit::instance;
+            TranslationUnit::instance = NULL;
         }
 
         Declaration* getDeclaration()

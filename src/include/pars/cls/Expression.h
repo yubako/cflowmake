@@ -18,7 +18,6 @@ class Expression : public SourceLocation
             : SourceLocation(line, str)
         {
             this->_sibling = NULL;
-            printf("Expression: %s\n", str);
         }
         virtual ~Expression() { }
 

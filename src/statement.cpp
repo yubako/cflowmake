@@ -19,7 +19,10 @@ int CompoundStatement::accept(CyVisitor* visitor)
     int ope = CyVisitor::VISIT_CONTINUE;
     if ( visitor->visit(this) == CyVisitor::VISIT_BREAK )
         return CyVisitor::VISIT_BREAK;
+
+    this->getStatement()->accept(visitor);
     visitor->leave(this);
+
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -71,6 +74,8 @@ int WhileStatement::accept(CyVisitor* visitor)
     int ope = CyVisitor::VISIT_CONTINUE;
     if ( visitor->visit(this) == CyVisitor::VISIT_BREAK )
         return CyVisitor::VISIT_BREAK;
+
+    this->getStatement()->accept(visitor);
     visitor->leave(this);
 
     if ( this->hasNextSibling() )
@@ -81,14 +86,19 @@ int WhileStatement::accept(CyVisitor* visitor)
 
 int ForStatement::accept(CyVisitor* visitor)
 {
+    printf("For accept\n");
     int ope = CyVisitor::VISIT_CONTINUE;
     if ( visitor->visit(this) == CyVisitor::VISIT_BREAK )
         return CyVisitor::VISIT_BREAK;
+
+    this->getStatement()->accept(visitor);
+    printf("For Leave accept\n");
     visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
+    printf("For End accept\n");
     return ope;
 }
 
@@ -97,6 +107,8 @@ int DoStatement::accept(CyVisitor* visitor)
     int ope = CyVisitor::VISIT_CONTINUE;
     if ( visitor->visit(this) == CyVisitor::VISIT_BREAK )
         return CyVisitor::VISIT_BREAK;
+
+    this->getStatement()->accept(visitor);
     visitor->leave(this);
 
     if ( this->hasNextSibling() )

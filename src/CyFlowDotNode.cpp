@@ -11,7 +11,7 @@
 // static
 std::vector<CyFlowDotEdge*> CyFlowDotEdge::_edge_all;
 std::vector<CyFlowDotNode*> CyFlowDotNode::_node_all;
-unsigned int           CyFlowDotNode::_serial = 0;
+unsigned int                CyFlowDotNode::_serial = 0;
 
 
 CyFlowDotNode* CyFlowDotNode::factory()
@@ -28,7 +28,7 @@ CyFlowDotNode* CyFlowDotNode::factory(const char* str)
 }
 CyFlowDotNode* CyFlowDotNode::factory(ExpressionStatement* stmt)
 {
-    char str[256];
+    char str[1024];
     CyFlowDotNode* node = new CyFlowDotNode();
 
     sprintf(str, "%d: %s", stmt->getLine(), stmt->toString());
@@ -67,10 +67,39 @@ CyFlowDotNode* CyFlowDotNode::factory(ReturnStatement* stmt)
 {
     char str[256];
     CyFlowDotNode* node = new CyFlowDotNode();
-
-    sprintf(str, "%d: return", stmt->getLine());
+    sprintf(str, "%d: %s", stmt->getLine(), stmt->toString());
     node->setLabel(str);
 
+    return node;
+}
+
+CyFlowDotNode* CyFlowDotNode::factory(WhileStatement* stmt)
+{
+    CyFlowDotNode* node = new CyFlowDotNode();
+    node->setProperty("shape", "trapezium");
+    node->setProperty("style", "filled");
+    node->setProperty("width", "1.0");
+    node->setProperty("height", "0.3");
+    return node;
+}
+
+CyFlowDotNode* CyFlowDotNode::factory(ForStatement* stmt)
+{
+    CyFlowDotNode* node = new CyFlowDotNode();
+    node->setProperty("shape", "trapezium");
+    node->setProperty("style", "filled");
+    node->setProperty("width", "1.0");
+    node->setProperty("height", "0.3");
+    return node;
+}
+
+CyFlowDotNode* CyFlowDotNode::factoryLoopEnd()
+{
+    CyFlowDotNode* node = new CyFlowDotNode();
+    node->setProperty("shape", "invtrapezium");
+    node->setProperty("style", "filled");
+    node->setProperty("width", "1.0");
+    node->setProperty("height", "0.3");
     return node;
 }
 

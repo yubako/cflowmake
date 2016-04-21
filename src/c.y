@@ -496,6 +496,7 @@ parameter_type_list                     : parameter_list
                                             str = psbuff_realloc($<str>1, $<str>2);
                                             str = psbuff_realloc(str,     $<str>3);
                                             $<str>$ = str;
+                                            dprintf("parameter_type_list", "%s\n", $<str>$);
                                         }
                                         ;
 
@@ -509,6 +510,7 @@ parameter_list                          :                    parameter_declarati
                                             str = psbuff_realloc($<str>1, $<str>2);
                                             str = psbuff_realloc(str,     $<str>3);
                                             $<str>$ = str;
+                                            dprintf("parameter_list", "%s\n", $<str>$);
                                         }
                                         ;
 
@@ -1391,7 +1393,7 @@ expression                              : assignment_expression
                                         | expression ',' assignment_expression
                                         {
                                             /* 境界が分かるように "," もExpressionにしておく */
-                                            Expression* expr1 = new Expression(g_line, ",");
+                                            Expression* expr1 = new Expression(g_line, $<str>2);
                                             Expression* expr2 = $<expr>3;
                                             Expression* base = $<expr>1;
                                             base->pushSibling(expr1);
@@ -1409,6 +1411,8 @@ assignment_expression_list              : assignment_expression
                                         | assignment_expression_list ',' assignment_expression
                                         {
                                             Expression* base = $<expr>1;
+                                            Expression* expr = new Expression(g_line, $<str>2);
+                                            base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
                                             $<expr>$ = base;
                                             dprintf("Assignment Expression List2", "%s\n", base->toString());

@@ -39,6 +39,7 @@ $(OBJ_DIR)/cl.o:  yacc
 	$(SILENCE)g++ -g $(YACCDEBUG) -include pars/cyparse.h -include pars/cytypes.h $(HEADDIR) -I$(YACCWORK) -c -o $@ $(YACCWORK)/cl.cpp
 
 $(OBJ_DIR)/%.o : %.cpp
+	@[ -d $(OBJ_DIR)  ]; mkdir -p $(OBJ_DIR)
 	@echo compiling $<
 	$(SILENCE)g++ -g $(HEADDIR) -I$(YACCWORK) -c -o $@ $<
 

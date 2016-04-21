@@ -17,7 +17,7 @@ class CyFlowDotEdge
         }
 
     protected:
-        char           _str[256];
+        char           _str[512];
         std::map<std::string, std::string> _property;
 
         const char*    _from;       /* 元   */
@@ -102,15 +102,18 @@ class CyFlowDotEdge
             this->_same = 1;
         }
 
-        void setLabel(const char* str)
+        const char* mk_labelstring(const char* str)
         {
             unsigned int i;
-            size_t len;
-            char  buffer[128] = {0};
-            char* ptr = buffer;
-            len = strlen(str);
+            size_t linechars;
 
-            for ( i = 0; i < len; i++ ) 
+            size_t len = strlen(str);
+            char* buffer = new char[len * 2];
+            char* ptr = buffer;
+
+            linechars = 0;
+            *ptr++ = ' ';
+            for ( i = 0; i < len; i++ , linechars++ ) 
             {
                 if ( *(str + i) == '"' )
                 {
@@ -125,8 +128,29 @@ class CyFlowDotEdge
                     *ptr++ = *(str + i);
                 }
 
+                if ( linechars  > 40 && *(str + i) == ' ')
+                {
+                    ptr += sprintf(ptr, "\\l    ");
+                    linechars = 0;
+                }
             }
-            this->setProperty("label", buffer);
+
+            ptr += sprintf(ptr, "\\l");
+            return buffer;
+        }
+        void setTailLabel(const char* str)
+        {
+            this->setProperty("taillabel", this->mk_labelstring(str));
+        }
+
+        void setHeadLabel(const char* str)
+        {
+            this->setProperty("headlabel", this->mk_labelstring(str));
+        }
+
+        void setLabel(const char* str)
+        {
+            this->setProperty("label", this->mk_labelstring(str));
         }
 
 };

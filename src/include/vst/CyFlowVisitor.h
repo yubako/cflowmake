@@ -52,8 +52,10 @@ class CyFlowVisitor : public CyVisitor
         virtual int visit(CaseStatement* stmt);
 
         virtual int visit(FunctionDefinition* decl);
-        virtual void leave(FunctionDefinition* decl);
 
+        virtual void leave(FunctionDefinition* decl);
+        virtual void leave(ForStatement* stmt);
+        virtual void leave(WhileStatement* stmt);
 };
 
 #endif

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for f in *.dot; do
+for f in dots/*.dot; do
     dot -Tpng -o ${f}.png $f
 done
 

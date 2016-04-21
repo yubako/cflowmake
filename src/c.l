@@ -18,7 +18,9 @@ sign    [+-]
 
 %%
 
+#                { BEGIN cpp_comment;               }
 "/*"             { BEGIN c_comment;                 }
+<c_comment>\n    { g_line++;                        }
 <c_comment>"*/"  { BEGIN 0;                         }
 "//"             { BEGIN cpp_comment;               }
 <cpp_comment>\n  { g_line ++; BEGIN 0;              }
@@ -43,7 +45,9 @@ typedef     {
                 yylval.str = strdup(yytext);
                 return storage_class_specifier; 
             }
-
+ 
+   
+function_call_stack_data |
 void        |
 char        |
 short       |
@@ -54,7 +58,10 @@ double      |
 signed      |
 unsigned    |
 key_t       |
+Dl_info     |
+size_t      |
 pid_t       |
+uint64_t    |
 uint32_t    |
 uint16_t    {
 

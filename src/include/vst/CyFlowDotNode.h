@@ -12,8 +12,8 @@ class CyFlowDotNode
     private:
         static std::vector<CyFlowDotNode*> _node_all;
         static unsigned int _serial;
-        char                _str[256];
-        char                _label[128];
+        char                _str[512];
+        char                _label[512];
         unsigned int        _id;
 
 
@@ -39,6 +39,9 @@ class CyFlowDotNode
         static CyFlowDotNode* factory(ExpressionStatement* stmt);
         static CyFlowDotNode* factory(IfStatement* stmt);
         static CyFlowDotNode* factory(ReturnStatement* stmt);
+        static CyFlowDotNode* factory(ForStatement* stmt);
+        static CyFlowDotNode* factory(WhileStatement* stmt);
+        static CyFlowDotNode* factoryLoopEnd();
         static CyFlowDotNode* factoryVertexNode();
         static CyFlowDotNode* factoryConfluenceNode();
 
@@ -53,8 +56,8 @@ class CyFlowDotNode
             property["fixedsize"]  = "true";
             property["fontsize"]   = "11";
             property["fontcolor"]  = "#000000";
-            property["height"]     = "0.5";
-            property["width"]      = "3.0";
+            //property["height"]     = "0.5";
+            property["width"]      = "2.0";
 
             unsigned int len = 0;
             len += sprintf(str + len, "node [\n");
@@ -82,11 +85,15 @@ class CyFlowDotNode
         void setLabel(const char* str)
         {
             unsigned int i;
-            size_t len;
+            size_t len, linechars;
+            unsigned int line = 1;
             char*  ptr = this->_label;
+            char   property[32];
             len = strlen(str);
 
-            for ( i = 0; i < len; i++ ) 
+            linechars = 0;
+            *ptr++ = ' ';
+            for ( i = 0; i < len; i++, linechars++ ) 
             {
                 if ( *(str + i) == '"' )
                 {
@@ -101,8 +108,23 @@ class CyFlowDotNode
                     *ptr++ = *(str + i);
                 }
 
+                if ( linechars  > 40 
+                        && *(str + i) == ' '
+                        && len - i > 5)
+                {
+                    ptr += sprintf(ptr, "\\l        ");
+                    linechars = 0;
+                    line++;
+                }
             }
-            //strcat(this->_label, "\\l");  左寄せ
+
+            sprintf(property, "%.1f", 0.3 * line);
+            this->setProperty("height", property);
+            if ( line > 1)
+            {
+                this->setProperty("width", "3.5");
+            }
+            strcat(this->_label, "\\l");  //左寄せ
         }
 
         const char* toString()

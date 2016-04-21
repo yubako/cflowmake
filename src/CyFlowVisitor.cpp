@@ -18,13 +18,11 @@ int CyFlowVisitor::visit(FunctionDefinition* decl)
     /* 起点を作成 */
     this->_path = this->_graph->createPath(NULL);
 
-    printf("visit function %s\n", decl->toString());
     return CyVisitor::VISIT_CONTINUE;
 }
 
 void CyFlowVisitor::leave(FunctionDefinition* decl)
 {
-    printf("leave function %s\n", decl->toString());
     /* 終点を作成 */
     this->_path->close(NULL);
 }
@@ -42,7 +40,7 @@ int CyFlowVisitor::visit(NullStatement* stmt)
 
 int CyFlowVisitor::visit(CompoundStatement* stmt)
 {
-    stmt->getStatement()->accept(this);
+    return CyVisitor::VISIT_CONTINUE;
 }
 
 int CyFlowVisitor::visit(DefaultStatement* stmt)
@@ -54,6 +52,7 @@ int CyFlowVisitor::visit(ExpressionStatement* stmt)
 {
     CyFlowDotNode *node = CyFlowDotNode::factory(stmt);
     this->_path->push(node);
+    printf("ExpressionStatement: %s\n", node->toString());
     return CyVisitor::VISIT_CONTINUE;
 }
 
@@ -66,7 +65,8 @@ int CyFlowVisitor::visit(IfStatement* stmt)
     
     node = CyFlowDotNode::factory(stmt);
     edge = this->_path->push(node);
-    edge->setProperty("label", stmt->toString());
+    //edge->setProperty("taillabel", stmt->toString());
+    edge->setHeadLabel(stmt->toString());
 
     /* true */
     ope = stmt->getTrue()->accept(this);
@@ -94,12 +94,44 @@ int CyFlowVisitor::visit(IfStatement* stmt)
 
 int CyFlowVisitor::visit(WhileStatement* stmt)
 {
+    CyFlowDotNode *node;
+    CyFlowDotEdge* edge;
+
+    node = CyFlowDotNode::factory(stmt);
+    edge = this->_path->push(node);
+    //edge->setProperty("headlabel", stmt->toString());
+    edge->setHeadLabel(stmt->toString());
+
     return CyVisitor::VISIT_CONTINUE;
+}
+
+void CyFlowVisitor::leave(WhileStatement* stmt)
+{
+    CyFlowDotNode *node;
+
+    node = CyFlowDotNode::factoryLoopEnd();
+    this->_path->push(node);
 }
 
 int CyFlowVisitor::visit(ForStatement* stmt)
 {
+    CyFlowDotNode *node;
+    CyFlowDotEdge* edge;
+
+    node = CyFlowDotNode::factory(stmt);
+    edge = this->_path->push(node);
+    //edge->setProperty("headlabel", stmt->toString());
+    edge->setLabel(stmt->toString());
+
     return CyVisitor::VISIT_CONTINUE;
+}
+
+void CyFlowVisitor::leave(ForStatement* stmt)
+{
+    CyFlowDotNode *node;
+
+    node = CyFlowDotNode::factoryLoopEnd();
+    this->_path->push(node);
 }
 
 int CyFlowVisitor::visit(DoStatement* stmt)
