@@ -25,7 +25,7 @@ FILE* graph_file_open(const char* fpath, const char* name)
 
 void CyFlowDotGraph::saveDotFile(const char* fpath)
 {
-    char buffer[4096];
+    char* buffer = new char[1024 * 1024];
     unsigned int len = 0;
     FILE* fp = graph_file_open(fpath, this->_name);
     if ( fp == NULL ) return;
@@ -34,9 +34,11 @@ void CyFlowDotGraph::saveDotFile(const char* fpath)
 
     len += sprintf(buffer + len, "digraph \"%s\" {\n\n", this->_name);
     len += sprintf(buffer + len, "    label = \"%s\";\n", this->_name);
+    fprintf(fp, buffer);
+    len = 0;
+
     len += CyFlowDotEdge::edgeDefaultDefine(buffer + len);
     len += CyFlowDotNode::nodeDefaultDefine(buffer + len);
-
     fprintf(fp, buffer);
     len = 0;
 

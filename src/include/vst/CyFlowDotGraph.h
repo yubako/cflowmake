@@ -55,6 +55,41 @@ class CyFlowPath
             return edge;
         }
 
+        CyFlowDotEdge* push(const char* from, const char* to)
+        {
+            CyFlowDotEdge* edge = CyFlowDotEdge::factory(from, to);
+            this->_edges.push_back(edge);
+            return edge;
+        }
+
+        size_t nodeCount()
+        {
+            return this->_nodes.size();
+        }
+
+        CyFlowDotNode* get(size_t idx)
+        {
+            return this->_nodes[idx];
+        }
+
+        CyFlowPath* branch(CyFlowDotNode* base)
+        {
+            size_t i;
+            CyFlowDotEdge* edge;
+            CyFlowPath* path = new CyFlowPath(this->get(0));
+
+            for ( i = 0; i < this->nodeCount() -1; i++ )
+            {
+                path->push(CyFlowDotNode::factory());
+            }
+
+            /* 分岐点をつくる */
+            path->push(base);
+            edge = path->push(CyFlowDotNode::factoryVertexNode());
+            edge->setSame();
+            return path;
+        }
+
         const char* getCurrentNode()
         {
             return this->_cur_node;
@@ -122,6 +157,11 @@ class CyFlowDotGraph
             CyFlowPath* path = new CyFlowPath(sameNode);
             this->_paths.push_back(path);
             return path;
+        }
+
+        void push(CyFlowPath* path)
+        {
+            this->_paths.push_back(path);
         }
 
         void saveDotFile(const char* fpath);

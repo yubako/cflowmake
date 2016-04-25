@@ -52,43 +52,58 @@ int CyFlowVisitor::visit(ExpressionStatement* stmt)
 {
     CyFlowDotNode *node = CyFlowDotNode::factory(stmt);
     this->_path->push(node);
-    printf("ExpressionStatement: %s\n", node->toString());
     return CyVisitor::VISIT_CONTINUE;
 }
 
 int CyFlowVisitor::visit(IfStatement* stmt)
 {
-    int ope;
+    int ope1, ope2;
     CyFlowDotEdge *edge;
     CyFlowDotNode *node, *confluence;
     CyFlowPath    *pathTrue, *pathElse;
     
+    /* IFノード追加 */
     node = CyFlowDotNode::factory(stmt);
     edge = this->_path->push(node);
-    //edge->setProperty("taillabel", stmt->toString());
     edge->setHeadLabel(stmt->toString());
 
     /* true */
-    ope = stmt->getTrue()->accept(this);
-
-    /* 合流地点を作成 */
-    confluence = CyFlowDotNode::factoryConfluenceNode();
-    this->_path->push(confluence);
-
-    /* 分岐追加 */
-    pathElse = this->_graph->createPath(node);
-    pathTrue = this->pathSwitch(pathElse);
+    ope1 = stmt->getTrue()->accept(this);
 
     /* else */
+    pathElse = this->_graph->createPath(node);
+    pathTrue = this->pathSwitch(pathElse);
     this->_path->getLastEdge()->setProperty("label", "False");
-    ope = stmt->getElse()->accept(this);
+    ope2 = stmt->getElse()->accept(this);
 
-    /* elseパス終了 */
-    pathElse->close(confluence);
+    if ( ope1 == CyVisitor::VISIT_CONTINUE
+            && ope2 == CyVisitor::VISIT_CONTINUE )
+    {
+        /* 合流地点を作成 */
+        confluence = CyFlowDotNode::factoryConfluenceNode();
+        pathTrue->push(confluence);
 
+        /* elseパスは終了 */
+        pathElse->close(confluence);
 
-    /* 合流地点から継続 */
-    this->pathSwitch(pathTrue);
+        /* 続きはTrueの流れで */
+        this->pathSwitch(pathTrue);
+    }
+    else
+    {
+        if ( ope1 == CyVisitor::VISIT_CONTINUE )
+        {
+            /* 合流地点から継続 */
+            this->pathSwitch(pathTrue);
+        }
+        else
+        {
+            /* 合流地点から継続 */
+            this->pathSwitch(pathElse);
+        }
+
+    }
+
     return CyVisitor::VISIT_CONTINUE;
 }
 
@@ -175,7 +190,6 @@ int CyFlowVisitor::visit(CaseStatement* stmt)
 {
     return CyVisitor::VISIT_CONTINUE;
 }
-
 
 
 void CyFlowVisitor::save(const char* fpath)

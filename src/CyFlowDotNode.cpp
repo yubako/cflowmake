@@ -65,7 +65,7 @@ CyFlowDotNode* CyFlowDotNode::factoryConfluenceNode()
 
 CyFlowDotNode* CyFlowDotNode::factory(ReturnStatement* stmt)
 {
-    char str[256];
+    char str[512];
     CyFlowDotNode* node = new CyFlowDotNode();
     sprintf(str, "%d: %s", stmt->getLine(), stmt->toString());
     node->setLabel(str);

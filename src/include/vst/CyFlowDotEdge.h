@@ -17,7 +17,7 @@ class CyFlowDotEdge
         }
 
     protected:
-        char           _str[512];
+        char           _str[4096];
         std::map<std::string, std::string> _property;
 
         const char*    _from;       /* 元   */

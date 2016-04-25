@@ -57,7 +57,7 @@ class CyFlowDotNode
             property["fontsize"]   = "11";
             property["fontcolor"]  = "#000000";
             //property["height"]     = "0.5";
-            property["width"]      = "2.0";
+            property["width"]      = "3.0";
 
             unsigned int len = 0;
             len += sprintf(str + len, "node [\n");
@@ -118,7 +118,7 @@ class CyFlowDotNode
                 }
             }
 
-            sprintf(property, "%.1f", 0.3 * line);
+            sprintf(property, "%.1f", 0.4 * line);
             this->setProperty("height", property);
             if ( line > 1)
             {
