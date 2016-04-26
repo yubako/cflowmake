@@ -46,9 +46,9 @@ class CyFlowDotEdge
             unsigned int len = 0;
             std::map<std::string, std::string> property;
 
-            property["fontsize"]  = "11";
+            property["fontsize"]  = "14";
             property["fontcolor"] = "#000000";
-            property["fontname"]  = "MS Gothic";
+            property["fontname"]  = "NSimSun";
             property["fillcolor"] = "#0000ff";
 
             len += sprintf(str + len, "edge [\n");

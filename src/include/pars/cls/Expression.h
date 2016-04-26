@@ -45,9 +45,21 @@ class Expression : public SourceLocation
         const char* toString()
         {
             unsigned int len = 0;
-            len += sprintf(this->_printbuff, "%s ", this->getCodeString());
+            len += sprintf(this->_printbuff + len, "%s", this->getCodeString());
+
+            if ( strcmp(this->getCodeString(), ",") == 0 )
+            {
+                len += sprintf(this->_printbuff + len, " ");
+            }
+
             if ( this->hasNextSibling() ) 
-                len += sprintf(this->_printbuff + len, " %s", this->getNextSibling()->toString());
+            {
+                if ( this->getNextSibling()->getLine() > this->getLine() )
+                {
+                    len += sprintf(this->_printbuff + len, "\n    ");
+                }
+                len += sprintf(this->_printbuff + len, "%s", this->getNextSibling()->toString());
+            }
 
             return this->_printbuff;
         }

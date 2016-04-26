@@ -41,13 +41,12 @@ auto        |
 register    |
 static      |
 extern      |
-typedef     { 
+typedef     {
                 yylval.str = strdup(yytext);
-                return storage_class_specifier; 
+                return storage_class_specifier_keywords;
             }
  
    
-function_call_stack_data |
 void        |
 char        |
 short       |
@@ -147,6 +146,11 @@ L?\"(\\.|[^\\"])*\" { yylval.str = strdup(yytext); return string;      }
  */
 %}
 {letters}({letters}|{digits})*  {
+                                    /* 
+                                        テーブル検索ののちidentifier or typdef_nameどっちかを返すべき
+                                        現状はidentifier固定
+                                    */
+
                                     yylval.str = strdup(yytext);
                                     return identifier;
                                 }

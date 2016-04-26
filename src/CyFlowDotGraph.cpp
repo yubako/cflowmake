@@ -38,6 +38,9 @@ void CyFlowDotGraph::saveDotFile(const char* fpath)
     len = 0;
 
     len += CyFlowDotEdge::edgeDefaultDefine(buffer + len);
+    fprintf(fp, buffer);
+    len = 0;
+
     len += CyFlowDotNode::nodeDefaultDefine(buffer + len);
     fprintf(fp, buffer);
     len = 0;

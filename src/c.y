@@ -12,8 +12,9 @@ extern TranslationUnit* tunit;
 
 %}
 
-%token storage_class_specifier type_specifier_keywords type_qualifier_keywords struct_or_union
+%token storage_class_specifier_keywords type_specifier_keywords type_qualifier_keywords struct_or_union
 %token assignment_operator_keywords
+%token typedef_name
 %token ENUM IF ELSE SWITCH DO FOR CASE WHILE GOTO CONTINUE BREAK RETURN DEFAULT SIZEOF DOTS DOT
 %token GT LT GE LE PP MM ARROW
 %token OR AND EQUAL NOTEQUAL
@@ -175,6 +176,12 @@ declaration_specifier                   : storage_class_specifier declaration_sp
                                         }
                                         ;
 
+storage_class_specifier                 : storage_class_specifier_keywords
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
+                                        ;
+
 type_specifier                          : type_specifier_keywords
                                         {
                                             $<str>$ = $<str>1;
@@ -187,7 +194,7 @@ type_specifier                          : type_specifier_keywords
                                         {
                                             $<str>$ = $<str>1;
                                         }
-/*                                      | typedef_name */
+                                        | typedef_name 
                                         ;
 
 type_qualifier                          : type_qualifier_keywords
@@ -965,8 +972,8 @@ conditional_expression                  : logical_or_expression
                                         }
                                         | logical_or_expression '?' expression ':' conditional_expression
                                         {
-                                            Expression* expr1 = new Expression(g_line, $<str>2);
-                                            Expression* expr2 = new Expression(g_line, $<str>4);
+                                            Expression* expr1 = new Expression($<expr>1->getLine(), $<str>2);
+                                            Expression* expr2 = new Expression($<expr>1->getLine(), $<str>4);
                                             Expression* base = $<expr>1;
                                             base->pushSibling(expr1);
                                             base->pushSibling($<expr>3);
@@ -1010,7 +1017,7 @@ inclusive_or_expression                 : exclusive_or_expression
                                         }
                                         | inclusive_or_expression '|' exclusive_or_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1024,7 +1031,7 @@ exclusive_or_expression                 : and_expression
                                         }
                                         | exclusive_or_expression '^' and_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1038,7 +1045,7 @@ and_expression                          : equality_expression
                                         }
                                         | and_expression '&' equality_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1052,7 +1059,7 @@ equality_expression                     : relational_expression
                                         }
                                         | equality_expression EQUAL    relational_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1060,7 +1067,7 @@ equality_expression                     : relational_expression
                                         }
                                         | equality_expression NOTEQUAL relational_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1074,7 +1081,7 @@ relational_expression                   : shift_expression
                                         }
                                         | relational_expression GT shift_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1082,7 +1089,7 @@ relational_expression                   : shift_expression
                                         }
                                         | relational_expression LT shift_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1090,7 +1097,7 @@ relational_expression                   : shift_expression
                                         }
                                         | relational_expression GE shift_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1098,7 +1105,7 @@ relational_expression                   : shift_expression
                                         }
                                         | relational_expression LE shift_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1114,7 +1121,7 @@ shift_expression                        : additive_expression
                                         }
                                         | shift_expression LSHIFT additive_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1122,7 +1129,7 @@ shift_expression                        : additive_expression
                                         }
                                         | shift_expression RSHIFT additive_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1138,7 +1145,7 @@ additive_expression                     : multiplicative_expression
                                         }
                                         | additive_expression '+' multiplicative_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1146,7 +1153,7 @@ additive_expression                     : multiplicative_expression
                                         }
                                         | additive_expression '-' multiplicative_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1163,7 +1170,7 @@ multiplicative_expression               : cast_expression
                                         }
                                         | multiplicative_expression '*' cast_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1171,7 +1178,7 @@ multiplicative_expression               : cast_expression
                                         }
                                         | multiplicative_expression '/' cast_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1179,7 +1186,7 @@ multiplicative_expression               : cast_expression
                                         }
                                         | multiplicative_expression '%' cast_expression
                                         {
-                                            Expression *expr = new Expression(g_line, $<str>2);
+                                            Expression *expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression *base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
@@ -1274,8 +1281,8 @@ postfix_expression                      : primary_expression
                                         }
                                         | postfix_expression '[' expression ']'
                                         {
-                                            Expression* expr1 = new Expression(g_line, "[");
-                                            Expression* expr2 = new Expression(g_line, "]");
+                                            Expression* expr1 = new Expression($<expr>1->getLine(), "[");
+                                            Expression* expr2 = new Expression($<expr>1->getLine(), "]");
                                             Expression* base  = $<expr>1;
                                             base->pushSibling(expr1);
                                             base->pushSibling($<expr>3);
@@ -1284,8 +1291,8 @@ postfix_expression                      : primary_expression
                                         }
                                         | postfix_expression '('                            ')'
                                         {
-                                            Expression* expr1 = new Expression(g_line, "(");
-                                            Expression* expr2 = new Expression(g_line, ")");
+                                            Expression* expr1 = new Expression($<expr>1->getLine(), "(");
+                                            Expression* expr2 = new Expression($<expr>1->getLine(), ")");
                                             Expression* base  = $<expr>1;
                                             base->pushSibling(expr1);
                                             base->pushSibling(expr2);
@@ -1294,8 +1301,8 @@ postfix_expression                      : primary_expression
                                         }
                                         | postfix_expression '(' assignment_expression_list ')'
                                         {
-                                            Expression* expr1 = new Expression(g_line, "(");
-                                            Expression* expr2 = new Expression(g_line, ")");
+                                            Expression* expr1 = new Expression($<expr>1->getLine(), "(");
+                                            Expression* expr2 = new Expression($<expr>1->getLine(), ")");
                                             Expression* base  = $<expr>1;
                                             base->pushSibling(expr1);
                                             base->pushSibling($<expr>3);
@@ -1393,7 +1400,7 @@ expression                              : assignment_expression
                                         | expression ',' assignment_expression
                                         {
                                             /* 境界が分かるように "," もExpressionにしておく */
-                                            Expression* expr1 = new Expression(g_line, $<str>2);
+                                            Expression* expr1 = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression* expr2 = $<expr>3;
                                             Expression* base = $<expr>1;
                                             base->pushSibling(expr1);
@@ -1411,7 +1418,7 @@ assignment_expression_list              : assignment_expression
                                         | assignment_expression_list ',' assignment_expression
                                         {
                                             Expression* base = $<expr>1;
-                                            Expression* expr = new Expression(g_line, $<str>2);
+                                            Expression* expr = new Expression($<expr>1->getLine(), $<str>2);
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);
                                             $<expr>$ = base;
@@ -1427,7 +1434,7 @@ assignment_expression                   : conditional_expression
                                         | unary_expression assignment_operator assignment_expression
                                         {
                                             /* operatorを考慮しだすと複雑になるのでexpressionに含める */
-                                            Expression* expr = new Expression(g_line, $<str>2);
+                                            Expression* expr = new Expression($<expr>1->getLine(), $<str>2);
                                             Expression* base = $<expr>1;
                                             base->pushSibling(expr);
                                             base->pushSibling($<expr>3);

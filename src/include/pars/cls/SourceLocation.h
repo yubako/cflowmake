@@ -9,7 +9,7 @@ class SourceLocation
 {
     private:
         unsigned int _line;
-        char         _str[1024];
+        char        *_str;
 
     protected:
         char         _printbuff[1024];
@@ -17,10 +17,18 @@ class SourceLocation
     public:
         SourceLocation(unsigned int line, const char* str)
         {
+            size_t len = strlen(str);
             this->_line = line;
+            this->_str = new char[len + 1];
             strcpy(this->_str, str);
         }
-        virtual ~SourceLocation(){}
+        virtual ~SourceLocation(){
+            if ( this->_str )
+            {
+                delete[] this->_str;
+                this->_str = NULL;
+            }
+        }
 
         const char* getCodeString()
         {

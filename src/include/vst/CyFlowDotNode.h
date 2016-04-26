@@ -53,10 +53,10 @@ class CyFlowDotNode
             property["color"]      = "#000000";
             property["fillcolor"]  = "#e6e6fa"; /* lavender */
             property["style"]      = "filled, rounded";
+            property["fontname"]   = "NSimSun";
             property["fixedsize"]  = "true";
             property["fontsize"]   = "11";
             property["fontcolor"]  = "#000000";
-            //property["height"]     = "0.5";
             property["width"]      = "3.0";
 
             unsigned int len = 0;
@@ -103,26 +103,23 @@ class CyFlowDotNode
                 {
                     *ptr++ = '\\';
                     *ptr++ = '\\';
+                }else if ( *(str + i) == '\n')
+                {
+                    line++;
+                    *ptr++ = '\\';
+                    *ptr++ = 'l';
+
                 }else
                 {
                     *ptr++ = *(str + i);
                 }
-
-                if ( linechars  > 40 
-                        && *(str + i) == ' '
-                        && len - i > 5)
-                {
-                    ptr += sprintf(ptr, "\\l        ");
-                    linechars = 0;
-                    line++;
-                }
             }
 
-            sprintf(property, "%.1f", 0.4 * line);
+            sprintf(property, "%.1f", 1 + (0.3 * line - 1));
             this->setProperty("height", property);
             if ( line > 1)
             {
-                this->setProperty("width", "3.5");
+                this->setProperty("width", "4");
             }
             strcat(this->_label, "\\l");  //左寄せ
         }

@@ -82,8 +82,8 @@ class FuncVisitor : public CyVisitor
 
 extern int yydebug;
 
-TEST(visit, walkthrow)
-{
+//TEST(visit, walkthrow)
+//{
 //    const char* path = "loadsrcs/func.c";
 //    FuncVisitor* visitor = new FuncVisitor();
 //
@@ -92,29 +92,15 @@ TEST(visit, walkthrow)
 //    TranslationUnit* unit = TranslationUnit::getInstance();
 //    printf("hogehoge\n\n\n\n");
 //    unit->accept(visitor);
-}
-
-
-//TEST(visit, flowVisitorIfstmt)
-//{
-//    const char* path = "loadsrcs/for.c";
-//    CyFlowVisitor* visitor = new CyFlowVisitor();
-//
-//    EXPECT_EQ( 0 ,cflowSrcParse(path));
-//
-//    TranslationUnit* unit = TranslationUnit::getInstance();
-//    unit->accept(visitor);
-//    visitor->save("func.dot");
-//    unit->deleteInstance();
-//    delete visitor;
 //}
+//
 
-TEST(visit, flowVisitorFor)
+TEST(visit, flowVisitorIfstmt)
 {
-    const char* path = "loadsrcs/stacktracer.c";
+    const char* path = "loadsrcs/func.c";
     CyFlowVisitor* visitor = new CyFlowVisitor();
 
-    ASSERT_EQ( 0 ,cflowSrcParse(path));
+    EXPECT_EQ( 0 ,cflowSrcParse(path));
 
     TranslationUnit* unit = TranslationUnit::getInstance();
     unit->accept(visitor);
