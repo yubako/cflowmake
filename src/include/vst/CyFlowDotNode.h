@@ -41,6 +41,7 @@ class CyFlowDotNode
         static CyFlowDotNode* factory(ReturnStatement* stmt);
         static CyFlowDotNode* factory(ForStatement* stmt);
         static CyFlowDotNode* factory(WhileStatement* stmt);
+        static CyFlowDotNode* factory(BreakStatement* stmt);
         static CyFlowDotNode* factoryLoopEnd();
         static CyFlowDotNode* factoryVertexNode();
         static CyFlowDotNode* factoryConfluenceNode();
@@ -82,48 +83,7 @@ class CyFlowDotNode
             this->_property[name] = value;
         }
 
-        void setLabel(const char* str)
-        {
-            unsigned int i;
-            size_t len, linechars;
-            unsigned int line = 1;
-            char*  ptr = this->_label;
-            char   property[32];
-            len = strlen(str);
-
-            linechars = 0;
-            *ptr++ = ' ';
-            for ( i = 0; i < len; i++, linechars++ ) 
-            {
-                if ( *(str + i) == '"' )
-                {
-                    *ptr++ = '\'';
-                }
-                else if ( *(str + i) == '\\')
-                {
-                    *ptr++ = '\\';
-                    *ptr++ = '\\';
-                }else if ( *(str + i) == '\n')
-                {
-                    line++;
-                    *ptr++ = '\\';
-                    *ptr++ = 'l';
-
-                }else
-                {
-                    *ptr++ = *(str + i);
-                }
-            }
-
-            sprintf(property, "%.1f", 1 + (0.3 * line - 1));
-            this->setProperty("height", property);
-            if ( line > 1)
-            {
-                this->setProperty("width", "4");
-            }
-            strcat(this->_label, "\\l");  //左寄せ
-        }
-
+        void setLabel(const char* str);
         const char* toString()
         {
             unsigned int len = 0;

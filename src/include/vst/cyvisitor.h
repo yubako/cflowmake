@@ -9,6 +9,7 @@ class CyVisitor
 
         static const int VISIT_CONTINUE = 1;
         static const int VISIT_BREAK    = 2;
+        static const int VISIT_RETURN   = 3;
 
         virtual int visit(TranslationUnit* stmt){return CyVisitor::VISIT_CONTINUE;}
         virtual int leave(TranslationUnit* stmt){return CyVisitor::VISIT_CONTINUE;}

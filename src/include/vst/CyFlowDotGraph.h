@@ -164,6 +164,25 @@ class CyFlowDotGraph
             this->_paths.push_back(path);
         }
 
+        static unsigned int graphDefaultDefine(char* str)
+        {
+            std::map<std::string, std::string> property;
+            property["bgcolor"]      = "#9999ff";
+            property["labelloc"]     = "t";
+
+            unsigned int len = 0;
+            len += sprintf(str + len, "graph [\n");
+            for ( std::map<std::string, std::string>::iterator it = property.begin();
+                    it != property.end(); it ++)
+            {
+                len += sprintf(str + len, "    %s = \"%s\",\n", it->first.c_str(), it->second.c_str());
+            }
+
+            len += sprintf(str + len, "];\n");
+
+            return len;
+        }
+
         void saveDotFile(const char* fpath);
 };
 

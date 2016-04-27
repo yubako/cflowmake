@@ -10,7 +10,6 @@ class Expression : public SourceLocation
 
     private:
         Expression*     _sibling;
-        char            _printbuff[1024];
 
     public:
 

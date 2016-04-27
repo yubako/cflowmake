@@ -96,12 +96,15 @@ int CyFlowVisitor::visit(IfStatement* stmt)
             /* 合流地点から継続 */
             this->pathSwitch(pathTrue);
         }
-        else
+        else if ( ope2 == CyVisitor::VISIT_CONTINUE )
         {
             /* 合流地点から継続 */
             this->pathSwitch(pathElse);
         }
-
+        else
+        {
+            return ope1;
+        }
     }
 
     return CyVisitor::VISIT_CONTINUE;
@@ -166,7 +169,9 @@ int CyFlowVisitor::visit(LabeledStatement* stmt)
 
 int CyFlowVisitor::visit(BreakStatement* stmt)
 {
-    return CyVisitor::VISIT_CONTINUE;
+    CyFlowDotNode *node = CyFlowDotNode::factory(stmt);
+    this->_path->push(node);
+    return CyVisitor::VISIT_BREAK;
 }
 
 int CyFlowVisitor::visit(ContinueStatement* stmt)
@@ -178,7 +183,7 @@ int CyFlowVisitor::visit(ReturnStatement* stmt)
 {
     CyFlowDotNode *node = CyFlowDotNode::factory(stmt);
     this->_path->push(node);
-    return CyVisitor::VISIT_BREAK;
+    return CyVisitor::VISIT_RETURN;
 }
 
 int CyFlowVisitor::visit(SwtStatement* stmt)

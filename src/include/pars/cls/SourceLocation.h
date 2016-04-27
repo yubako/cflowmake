@@ -12,7 +12,7 @@ class SourceLocation
         char        *_str;
 
     protected:
-        char         _printbuff[1024];
+        char         _printbuff[8192];
 
     public:
         SourceLocation(unsigned int line, const char* str)

@@ -3,9 +3,10 @@
 
 int Expression::accept(CyVisitor* visitor)
 {
-    int ope = CyVisitor::VISIT_CONTINUE;
-    if ( visitor->visit(this) == CyVisitor::VISIT_BREAK )
-        return CyVisitor::VISIT_BREAK;
+    int ope;
+    ope = visitor->visit(this);
+    if ( ope != CyVisitor::VISIT_CONTINUE )
+        return ope;
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -16,9 +17,10 @@ int Expression::accept(CyVisitor* visitor)
 
 int NullExpression::accept(CyVisitor* visitor)
 {
-    int ope = CyVisitor::VISIT_CONTINUE;
-    if ( visitor->visit(this) == CyVisitor::VISIT_BREAK )
-        return CyVisitor::VISIT_BREAK;
+    int ope;
+    ope =visitor->visit(this);
+    if ( ope != CyVisitor::VISIT_CONTINUE )
+        return ope;
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
