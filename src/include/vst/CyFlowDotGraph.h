@@ -48,7 +48,7 @@ class CyFlowPath
         CyFlowDotEdge* push(CyFlowDotNode* node)
         {
             CyFlowDotEdge* edge = CyFlowDotEdge::factory(this->getCurrentNode(), node->getNodeName());
-            edge->setProperty("weight", "2");
+            edge->setProperty("weight", "100");
             this->_edges.push_back(edge);
             this->_nodes.push_back(node);
             this->_cur_node = node->getNodeName();

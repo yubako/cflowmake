@@ -46,10 +46,10 @@ class CyFlowDotEdge
             unsigned int len = 0;
             std::map<std::string, std::string> property;
 
-            property["fontsize"]  = "14";
-            property["fontcolor"] = "#000000";
-            property["fontname"]  = "NSimSun";
-            property["fillcolor"] = "#0000ff";
+            property["fontsize"]   = "14";
+            property["fontcolor"]  = "#000000";
+            property["fontname"]   = "NSimSun";
+            property["fillcolor"]  = "#aaaaaa";
 
             len += sprintf(str + len, "edge [\n");
             for ( std::map<std::string, std::string>::iterator it = property.begin();
@@ -102,10 +102,10 @@ class CyFlowDotEdge
             this->_same = 1;
         }
 
-        const char* mk_labelstring(const char* str)
+        const char* mk_labelstring(const char* str, size_t *widechars = NULL)
         {
             unsigned int i;
-            size_t linechars;
+            size_t linechars, charmax = 0;
 
             size_t len = strlen(str);
             char* buffer = new char[len * 2];
@@ -128,33 +128,38 @@ class CyFlowDotEdge
                     *ptr++ = *(str + i);
                 }
 
-                if ( linechars  > 40 && *(str + i) == ' ')
+                if ( linechars  > 20 &&
+                        (  ( *(str + i) == ' ') || ( *(str + i) == ';' )
+                        || ( *(str + i) == ',') || ( *(str + i) == '\n') ) )
                 {
                     ptr += sprintf(ptr, "\\l    ");
+
+                    if ( charmax < linechars )
+                        charmax = linechars;
+
                     linechars = 0;
                 }
             }
+            if ( charmax < linechars )
+                charmax = linechars;
 
             ptr += sprintf(ptr, "\\l");
+
+            if ( widechars )
+                *widechars = charmax;
             return buffer;
-        }
-        void setTailLabel(const char* str)
-        {
-            this->setProperty("taillabel", this->mk_labelstring(str));
         }
 
         void setHeadLabel(const char* str)
         {
-            this->setProperty("headlabel", this->mk_labelstring(str));
+            size_t chars;
+            char   buff[128];
+            this->setProperty("headlabel", this->mk_labelstring(str, &chars));
+            sprintf(buff, "%0.1f", chars/(double)2);
+            this->setProperty("labeldistance", buff);
         }
-
-        void setLabel(const char* str)
-        {
-            this->setProperty("label", this->mk_labelstring(str));
-        }
-
 };
 
 
 
-#endif
+ #endif
