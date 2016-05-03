@@ -69,7 +69,7 @@ int CyFlowVisitor::visit(IfStatement* stmt)
 
     /* IFノードのラベルは右上に表示 */
     edge->setHeadLabel(stmt->toString());
-    edge->setProperty("labelfloat", "true");
+    //edge->setProperty("labelfloat", "true");
     edge->setProperty("labeldistance", "3.0");
     edge->setProperty("labelangle", "-45");
 
@@ -80,9 +80,9 @@ int CyFlowVisitor::visit(IfStatement* stmt)
     pathElse = this->_graph->createPath(node);
     pathTrue = this->pathSwitch(pathElse);
     this->_path->getLastEdge()->setHeadLabel("False");
-    this->_path->getLastEdge()->setProperty("labelfloat", "true");
-    this->_path->getLastEdge()->setProperty("labelangle", "90");
-    this->_path->getLastEdge()->setProperty("labeldistance", "1");
+    //this->_path->getLastEdge()->setProperty("labelfloat", "true");
+    this->_path->getLastEdge()->setProperty("labelangle", "-90");
+    this->_path->getLastEdge()->setProperty("labeldistance", "2");
     ope2 = stmt->getElse()->accept(this);
 
     if ( ope1 == CyVisitor::VISIT_CONTINUE
@@ -136,7 +136,7 @@ int CyFlowVisitor::visit(WhileStatement* stmt)
     /* 繰り返しノードを追加 */
     edge = this->_path->push(loopBegin);
     edge->setHeadLabel(stmt->toString());
-    edge->setProperty("labelfloat", "true");
+    //edge->setProperty("labelfloat", "true");
     edge->setProperty("labelangle", "180");
     edge->setProperty("labeldistance", "1");
 
@@ -172,7 +172,7 @@ int CyFlowVisitor::visit(ForStatement* stmt)
     /* 繰り返しノードを追加 */
     edge = this->_path->push(loopBegin);
     edge->setHeadLabel(stmt->toString());
-    edge->setProperty("labelfloat", "true");
+    //edge->setProperty("labelfloat", "true");
     edge->setProperty("labelangle", "180");
     edge->setProperty("labeldistance", "1");
 
@@ -289,7 +289,7 @@ int CyFlowVisitor::visit(CaseStatement* stmt)
     /* 切り替えて内部処理をトレース */
     pathold = this->pathSwitch(path);
     this->_path->getLastEdge()->setHeadLabel(stmt->toString());
-    this->_path->getLastEdge()->setProperty("labelfloat", "true");
+    //this->_path->getLastEdge()->setProperty("labelfloat", "true");
     this->_path->getLastEdge()->setProperty("labelangle", "-90");
     this->_path->getLastEdge()->setProperty("labeldistance", "2");
 
@@ -316,7 +316,7 @@ int CyFlowVisitor::visit(DefaultStatement* stmt)
     /* 切り替えて内部処理をトレース */
     pathold = this->pathSwitch(path);
     this->_path->getLastEdge()->setHeadLabel(stmt->toString());
-    this->_path->getLastEdge()->setProperty("labelfloat", "true");
+    //this->_path->getLastEdge()->setProperty("labelfloat", "true");
     this->_path->getLastEdge()->setProperty("labelangle", "-90");
     this->_path->getLastEdge()->setProperty("labeldistance", "2");
 

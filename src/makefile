@@ -51,3 +51,4 @@ clean:
 	rm -f c.tab.c c.tab.h
 	rm -f $(OBJ_DIR)/*.[ao]
 	rm -f $(LIB)
+	rm -f $(LMNAME)

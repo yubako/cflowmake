@@ -223,7 +223,15 @@ void CyFlowDotNode::setLabel(const char* str)
     sprintf(property, "%.1f", 1 + (0.3 * line - 1));
     this->setProperty("height", property);
 
-    if ( charmax < 40 )
+    if ( charmax < 20 )
+    {
+        this->setProperty("width", "2.5");
+    }
+    else if ( charmax < 30 )
+    {
+        this->setProperty("width", "3");
+    }
+    else if ( charmax < 40 )
     {
         this->setProperty("width", "5");
     }
