@@ -1,0 +1,151 @@
+digraph "int swmain ( void )" {
+
+    label = "int swmain ( void )";
+graph [
+    bgcolor = "#aaaaaa",
+    labelloc = "t",
+    splines = "false",
+];
+edge [
+    fillcolor = "#aaaaaa",
+    fontcolor = "#000000",
+    fontname = "NSimSun",
+    fontsize = "14",
+];
+node [
+    color = "#000000",
+    fillcolor = "#e6e6fa",
+    fixedsize = "true",
+    fontcolor = "#000000",
+    fontname = "NSimSun",
+    fontsize = "11",
+    shape = "box",
+    style = "filled, rounded",
+    width = "3.0",
+];
+
+
+
+Node_106   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_107   [height = "0.3",shape = "diamond",style = "filled",width = "1",label = " switch\l"]
+Node_108   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+Node_135   [height = "0.3",shape = "diamond",style = "filled",width = "1",label = ""]
+Node_136   [height = "0.3",width = "4",label = " 27: printf('hoge')\l"]
+Node_138   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+Node_140   [height = "0.3",width = "4",label = " 29: printf('hogehoge')\l"]
+Node_141   [height = "0.3",width = "4",label = " 30: return 10\l"]
+Node_142   [height = "0.1",shape = "point",width = "0.1",label = ""]
+
+
+Node_106 -> Node_107  [ weight = "100",];
+Node_107 -> Node_108  [ weight = "100",];
+Node_108 -> Node_135  [ headlabel = " a==10\l", labelangle = "-45", labeldistance = "3.0", labelfloat = "true", weight = "100",];
+Node_135 -> Node_136  [ weight = "100",];
+Node_136 -> Node_138  [ weight = "100",];
+Node_138 -> Node_140  [ weight = "100",];
+Node_140 -> Node_141  [ weight = "100",];
+Node_141 -> Node_142  [ weight = "100",];
+
+
+
+Node_110   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_111   [height = "0.3",width = "4",label = " 13: printf('a == 10')\l"]
+Node_112   [height = "0.3",width = "4",label = " 13: a--\l"]
+Node_113   [fillcolor = "#99ff00",height = "0.3",width = "2.0",label = " 13: break;\l"]
+Node_108   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+
+
+Node_107 -> Node_110  [ dir = "none", headlabel = " :10\l", labelangle = "-90", labeldistance = "2", labelfloat = "true",];
+{rank = same; Node_107; Node_110}
+Node_110 -> Node_111  [ weight = "100",];
+Node_111 -> Node_112  [ weight = "100",];
+Node_112 -> Node_113  [ weight = "100",];
+Node_113 -> Node_108  [ style = "dotted", weight = "1.0",];
+
+
+
+Node_115   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_116   [height = "0.3",width = "4",label = " 14: printf('a == 11')\l"]
+Node_117   [height = "0.3",width = "4",label = " 14: a++\l"]
+Node_118   [fillcolor = "#99ff00",height = "0.3",width = "2.0",label = " 14: break;\l"]
+Node_108   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+
+
+Node_107 -> Node_115  [ dir = "none", headlabel = " :11\l", labelangle = "-90", labeldistance = "2", labelfloat = "true",];
+{rank = same; Node_107; Node_115}
+Node_115 -> Node_116  [ weight = "100",];
+Node_116 -> Node_117  [ weight = "100",];
+Node_117 -> Node_118  [ weight = "100",];
+Node_118 -> Node_108  [ style = "dotted", weight = "1.0",];
+
+
+
+Node_120   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_121   [height = "0.3",width = "4",label = " 15: printf('a == 12')\l"]
+Node_122   [fillcolor = "#99ff00",height = "0.3",width = "2.0",label = " 15: break;\l"]
+Node_108   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+
+
+Node_107 -> Node_120  [ dir = "none", headlabel = " :12\l", labelangle = "-90", labeldistance = "2", labelfloat = "true",];
+{rank = same; Node_107; Node_120}
+Node_120 -> Node_121  [ weight = "100",];
+Node_121 -> Node_122  [ weight = "100",];
+Node_122 -> Node_108  [ style = "dotted", weight = "1.0",];
+
+
+
+Node_124   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_125   [height = "0.3",width = "4",label = " 16: printf('a == 13')\l"]
+Node_126   [fillcolor = "#99ff00",height = "0.3",width = "2.0",label = " 16: break;\l"]
+Node_108   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+
+
+Node_107 -> Node_124  [ dir = "none", headlabel = " :13\l", labelangle = "-90", labeldistance = "2", labelfloat = "true",];
+{rank = same; Node_107; Node_124}
+Node_124 -> Node_125  [ weight = "100",];
+Node_125 -> Node_126  [ weight = "100",];
+Node_126 -> Node_108  [ style = "dotted", weight = "1.0",];
+
+
+
+Node_128   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_129   [height = "0.3",width = "4",label = " 17: printf('a == 14')\l"]
+Node_130   [height = "0.3",width = "4",label = " 17: a++\l"]
+Node_131   [fillcolor = "#99ff00",height = "0.3",width = "2.0",label = " 17: break;\l"]
+Node_108   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+
+
+Node_107 -> Node_128  [ dir = "none", headlabel = " :14\l", labelangle = "-90", labeldistance = "2", labelfloat = "true",];
+{rank = same; Node_107; Node_128}
+Node_128 -> Node_129  [ weight = "100",];
+Node_129 -> Node_130  [ weight = "100",];
+Node_130 -> Node_131  [ weight = "100",];
+Node_131 -> Node_108  [ style = "dotted", weight = "1.0",];
+
+
+
+Node_132   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_133   [height = "0.3",width = "4",label = " 20: printf('default')\l"]
+Node_134   [fillcolor = "#99ff00",height = "0.3",width = "2.0",label = " 21: break;\l"]
+Node_108   [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+
+
+Node_107 -> Node_132  [ dir = "none", headlabel = " default\l", labelangle = "90", labeldistance = "1", labelfloat = "true",];
+{rank = same; Node_107; Node_132}
+Node_132 -> Node_133  [ weight = "100",];
+Node_133 -> Node_134  [ weight = "100",];
+Node_134 -> Node_108  [ style = "dotted", weight = "1.0",];
+
+
+
+Node_137   [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_139   [height = "0.1",shape = "point",width = "0.1",label = ""]
+
+
+Node_135 -> Node_137  [ dir = "none", headlabel = " False\l", labelangle = "90", labeldistance = "1", labelfloat = "true",];
+{rank = same; Node_135; Node_137}
+Node_137 -> Node_139  [ weight = "100",];
+Node_138 -> Node_139  [ dir = "back",];
+{rank = same; Node_138; Node_139}
+}
+ 

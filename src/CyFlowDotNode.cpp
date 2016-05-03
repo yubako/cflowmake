@@ -63,6 +63,33 @@ CyFlowDotNode* CyFlowDotNode::factoryConfluenceNode()
     return node;
 }
 
+CyFlowDotNode* CyFlowDotNode::factory(SwtStatement* stmt)
+{
+    CyFlowDotNode* node = new CyFlowDotNode();
+
+    node->setLabel("switch");
+    node->setProperty("shape", "diamond");
+    node->setProperty("style", "filled");
+    node->setProperty("width", "1");
+    node->setProperty("height", "0.3");
+
+    return node;
+}
+
+CyFlowDotNode* CyFlowDotNode::factory(CaseStatement* stmt)
+{
+    CyFlowDotNode* node = new CyFlowDotNode();
+    node->setLabel("case");
+    return node;
+}
+
+CyFlowDotNode* CyFlowDotNode::factory(DefaultStatement* stmt)
+{
+    CyFlowDotNode* node = new CyFlowDotNode();
+    node->setLabel("default");
+    return node;
+}
+
 CyFlowDotNode* CyFlowDotNode::factory(ReturnStatement* stmt)
 {
     char str[512];
@@ -79,6 +106,7 @@ CyFlowDotNode* CyFlowDotNode::factory(WhileStatement* stmt)
     node->setProperty("style", "filled");
     node->setProperty("width", "1.0");
     node->setProperty("height", "0.3");
+    node->setProperty("fillcolor", "#3300ff");
     return node;
 }
 
@@ -94,6 +122,17 @@ CyFlowDotNode* CyFlowDotNode::factory(ForStatement* stmt)
 }
 
 CyFlowDotNode* CyFlowDotNode::factory(BreakStatement* stmt)
+{
+    char str[128];
+    CyFlowDotNode* node = new CyFlowDotNode();
+    sprintf(str, "%d: %s", stmt->getLine(), stmt->toString());
+    node->setLabel(str);
+    node->setProperty("width", "2.0");
+    node->setProperty("fillcolor", "#99ff00");
+    return node;
+}
+
+CyFlowDotNode* CyFlowDotNode::factory(ContinueStatement* stmt)
 {
     char str[128];
     CyFlowDotNode* node = new CyFlowDotNode();

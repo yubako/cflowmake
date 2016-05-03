@@ -12,7 +12,6 @@ int TranslationUnit::accept(CyVisitor* visitor)
     if ( this->getDeclaration() )
         ope = this->getDeclaration()->accept(visitor);
 
-    visitor->leave(this);
     return ope;
 }
 

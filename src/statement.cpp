@@ -7,7 +7,6 @@ int NullStatement::accept(CyVisitor* visitor)
     ope = visitor->visit(this);
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-    visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -21,9 +20,6 @@ int CompoundStatement::accept(CyVisitor* visitor)
     ope = visitor->visit(this);
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-
-    ope = this->getStatement()->accept(visitor);
-    visitor->leave(this);
 
     if ( ope != CyVisitor::VISIT_CONTINUE)
     {
@@ -43,8 +39,6 @@ int DefaultStatement::accept(CyVisitor* visitor)
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
 
-    visitor->leave(this);
-
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
@@ -57,8 +51,6 @@ int ExpressionStatement::accept(CyVisitor* visitor)
     ope = visitor->visit(this);
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-
-    visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -73,8 +65,6 @@ int IfStatement::accept(CyVisitor* visitor)
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
 
-    visitor->leave(this);
-
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
@@ -87,9 +77,6 @@ int WhileStatement::accept(CyVisitor* visitor)
     ope = visitor->visit(this);
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-
-    this->getStatement()->accept(visitor);
-    visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -104,9 +91,6 @@ int ForStatement::accept(CyVisitor* visitor)
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
 
-    this->getStatement()->accept(visitor);
-    visitor->leave(this);
-
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
@@ -119,9 +103,6 @@ int DoStatement::accept(CyVisitor* visitor)
     ope = visitor->visit(this);
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-
-    this->getStatement()->accept(visitor);
-    visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -136,8 +117,6 @@ int GotoStatement::accept(CyVisitor* visitor)
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
 
-    visitor->leave(this);
-
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
@@ -150,8 +129,6 @@ int LabeledStatement::accept(CyVisitor* visitor)
     ope = visitor->visit(this);
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-
-    visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -166,8 +143,6 @@ int BreakStatement::accept(CyVisitor* visitor)
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
 
-    visitor->leave(this);
-
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
@@ -180,8 +155,6 @@ int ContinueStatement::accept(CyVisitor* visitor)
     ope = visitor->visit(this);
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-
-    visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -196,8 +169,6 @@ int ReturnStatement::accept(CyVisitor* visitor)
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
 
-    visitor->leave(this);
-
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
@@ -211,8 +182,6 @@ int SwtStatement::accept(CyVisitor* visitor)
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
 
-    visitor->leave(this);
-
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
@@ -223,15 +192,19 @@ int CaseStatement::accept(CyVisitor* visitor)
 {
     int ope;
     ope = visitor->visit(this);
-    if ( ope != CyVisitor::VISIT_CONTINUE )
-        return ope;
+//    if ( ope != CyVisitor::VISIT_CONTINUE )
+//        return ope;
 
-    visitor->leave(this);
+//    if ( this->hasNextSibling() ){
+//        printf("Case Next Statement\n");
+//        ope = this->getNextSibling()->accept(visitor);
+//    }
 
-    if ( this->hasNextSibling() )
-        ope = this->getNextSibling()->accept(visitor);
-
-    return ope;
+    /* 
+     * Caseのbreakはcompoundを抜けるものでは
+     * ないのでcontinueとする 
+     */
+    return CyVisitor::VISIT_CONTINUE;
 }
 
 

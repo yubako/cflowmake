@@ -167,8 +167,9 @@ class CyFlowDotGraph
         static unsigned int graphDefaultDefine(char* str)
         {
             std::map<std::string, std::string> property;
-            property["bgcolor"]      = "#9999ff";
+            property["bgcolor"]      = "#aaaaaa";
             property["labelloc"]     = "t";
+            property["splines"]      = "false"; /* 曲線は使わない */
 
             unsigned int len = 0;
             len += sprintf(str + len, "graph [\n");

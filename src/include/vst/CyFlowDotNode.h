@@ -12,8 +12,8 @@ class CyFlowDotNode
     private:
         static std::vector<CyFlowDotNode*> _node_all;
         static unsigned int _serial;
-        char                _str[512];
-        char                _label[512];
+        char                _str[1024];
+        char                _label[1024];
         unsigned int        _id;
 
 
@@ -42,6 +42,10 @@ class CyFlowDotNode
         static CyFlowDotNode* factory(ForStatement* stmt);
         static CyFlowDotNode* factory(WhileStatement* stmt);
         static CyFlowDotNode* factory(BreakStatement* stmt);
+        static CyFlowDotNode* factory(SwtStatement* stmt);
+        static CyFlowDotNode* factory(CaseStatement* stmt);
+        static CyFlowDotNode* factory(DefaultStatement* stmt);
+        static CyFlowDotNode* factory(ContinueStatement* stmt);
         static CyFlowDotNode* factoryLoopEnd();
         static CyFlowDotNode* factoryVertexNode();
         static CyFlowDotNode* factoryConfluenceNode();

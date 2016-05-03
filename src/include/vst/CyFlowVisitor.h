@@ -10,9 +10,38 @@
 #include <stdio.h>
 #include <vector>
 
+
+class CyFlowIteration
+{
+    private:
+        CyFlowDotNode       *_begin;
+        CyFlowDotNode       *_end;
+
+    public:
+        CyFlowIteration(CyFlowDotNode* begin, CyFlowDotNode* end)
+        {
+            this->_begin = begin;
+            this->_end   = end;
+        }
+        virtual ~CyFlowIteration()
+        {
+        }
+
+        CyFlowDotNode *begin()
+        {
+            return this->_begin;
+        }
+
+        CyFlowDotNode *end()
+        {
+            return this->_end;
+        }
+};
+
 class CyFlowVisitor : public CyVisitor 
 {
     private:
+        std::vector<CyFlowIteration>    _its;
         std::vector<CyFlowDotGraph*>    _graphs;
         CyFlowDotGraph*                 _graph;
         CyFlowPath*                     _path;
@@ -53,9 +82,6 @@ class CyFlowVisitor : public CyVisitor
 
         virtual int visit(FunctionDefinition* decl);
 
-        virtual void leave(FunctionDefinition* decl);
-        virtual void leave(ForStatement* stmt);
-        virtual void leave(WhileStatement* stmt);
 };
 
 #endif

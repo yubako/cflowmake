@@ -13,7 +13,7 @@ int aafunctionName(int hoge)
     else 
     {
         printf("geho\n");
-        return 10;
+        return 15;
     }
 
     printf("ho\n");

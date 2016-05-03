@@ -18,13 +18,13 @@ int CyFlowVisitor::visit(FunctionDefinition* decl)
     /* 起点を作成 */
     this->_path = this->_graph->createPath(NULL);
 
-    return CyVisitor::VISIT_CONTINUE;
-}
+    /* 関数本体にaccept */
+    decl->getStatement()->accept(this);
 
-void CyFlowVisitor::leave(FunctionDefinition* decl)
-{
     /* 終点を作成 */
     this->_path->close(NULL);
+
+    return CyVisitor::VISIT_CONTINUE;
 }
 
 int CyFlowVisitor::visit(TranslationUnit* stmt)
@@ -40,12 +40,7 @@ int CyFlowVisitor::visit(NullStatement* stmt)
 
 int CyFlowVisitor::visit(CompoundStatement* stmt)
 {
-    return CyVisitor::VISIT_CONTINUE;
-}
-
-int CyFlowVisitor::visit(DefaultStatement* stmt)
-{
-    return CyVisitor::VISIT_CONTINUE;
+    return stmt->getStatement()->accept(this);
 }
 
 int CyFlowVisitor::visit(ExpressionStatement* stmt)
@@ -103,14 +98,12 @@ int CyFlowVisitor::visit(IfStatement* stmt)
         {
             /* 合流地点から継続 */
             this->pathSwitch(pathTrue);
+            return ope2;
         }
         else if ( ope2 == CyVisitor::VISIT_CONTINUE )
         {
             /* 合流地点から継続 */
             this->pathSwitch(pathElse);
-        }
-        else
-        {
             return ope1;
         }
     }
@@ -120,48 +113,60 @@ int CyFlowVisitor::visit(IfStatement* stmt)
 
 int CyFlowVisitor::visit(WhileStatement* stmt)
 {
-    CyFlowDotNode *node;
+    CyFlowDotNode *loopBegin, *loopEnd;
     CyFlowDotEdge* edge;
+    int ope;
 
-    node = CyFlowDotNode::factory(stmt);
-    edge = this->_path->push(node);
+    /* ループ開始と終了ノードを作成 */
+    loopBegin = CyFlowDotNode::factory(stmt);
+    loopEnd   = CyFlowDotNode::factoryLoopEnd();
+    CyFlowIteration it(loopBegin, loopEnd);
+    this->_its.push_back(it);
+
+    /* 繰り返しノードを追加 */
+    edge = this->_path->push(loopBegin);
     edge->setHeadLabel(stmt->toString());
     edge->setProperty("labelfloat", "true");
     edge->setProperty("labelangle", "-90");
 
+    /* for本体 */
+    ope = stmt->getStatement()->accept(this);
+
+    /* loop終了 */
+    this->_its.pop_back();
+
+    /* for終点をつなげる */
+    this->_path->push(loopEnd);
     return CyVisitor::VISIT_CONTINUE;
-}
-
-void CyFlowVisitor::leave(WhileStatement* stmt)
-{
-    CyFlowDotNode *node;
-
-    node = CyFlowDotNode::factoryLoopEnd();
-    this->_path->push(node);
 }
 
 int CyFlowVisitor::visit(ForStatement* stmt)
 {
-    CyFlowDotNode *node;
+    int ope;
+    CyFlowDotNode *loopBegin, *loopEnd;
     CyFlowDotEdge* edge;
 
-    node = CyFlowDotNode::factory(stmt);
-    edge = this->_path->push(node);
+    /* ループ開始と終了ノードを作成 */
+    loopBegin = CyFlowDotNode::factory(stmt);
+    loopEnd   = CyFlowDotNode::factoryLoopEnd();
+    CyFlowIteration it(loopBegin, loopEnd);
+    this->_its.push_back(it);
 
-    /* 繰り返しノードのラベルは右に表示 */
+    /* 繰り返しノードを追加 */
+    edge = this->_path->push(loopBegin);
     edge->setHeadLabel(stmt->toString());
     edge->setProperty("labelfloat", "true");
     edge->setProperty("labelangle", "-90");
 
+    /* for本体 */
+    ope = stmt->getStatement()->accept(this);
+
+    /* loop終了 */
+    this->_its.pop_back();
+
+    /* for終点をつなげる */
+    this->_path->push(loopEnd);
     return CyVisitor::VISIT_CONTINUE;
-}
-
-void CyFlowVisitor::leave(ForStatement* stmt)
-{
-    CyFlowDotNode *node;
-
-    node = CyFlowDotNode::factoryLoopEnd();
-    this->_path->push(node);
 }
 
 int CyFlowVisitor::visit(DoStatement* stmt)
@@ -183,11 +188,29 @@ int CyFlowVisitor::visit(BreakStatement* stmt)
 {
     CyFlowDotNode *node = CyFlowDotNode::factory(stmt);
     this->_path->push(node);
-    return CyVisitor::VISIT_BREAK;
+
+    /* 直近のIterate(loop, switch)の終点につなげる */
+    CyFlowDotEdge* edge;
+    edge = this->_path->push(this->_its.back().end());
+    edge->setProperty("weight", "1.0");
+    edge->setProperty("style", "dotted");
+
+    return CyVisitor::VISIT_CONTINUE;
 }
 
 int CyFlowVisitor::visit(ContinueStatement* stmt)
 {
+    CyFlowDotEdge* edge;
+    CyFlowDotNode *node = CyFlowDotNode::factory(stmt);
+    edge = this->_path->push(node);
+
+    /* 直近のIterate(loop, switch)の起点につなげる */
+    edge = this->_path->push(
+                node->getNodeName(), 
+                this->_its.back().begin()->getNodeName());
+    edge->setProperty("weight", "1.0");
+    edge->setProperty("style", "dotted");
+
     return CyVisitor::VISIT_CONTINUE;
 }
 
@@ -200,12 +223,77 @@ int CyFlowVisitor::visit(ReturnStatement* stmt)
 
 int CyFlowVisitor::visit(SwtStatement* stmt)
 {
+    CyFlowPath *path;
+    Statement  *sibling;
+
+    path = this->_path;
+
+    /* switchノード作成 */
+    CyFlowDotNode *node       = CyFlowDotNode::factory(stmt);
+    CyFlowDotNode *confluence = CyFlowDotNode::factoryConfluenceNode();
+    this->_path->push(node);
+
+    /* Switch開始 */
+    CyFlowIteration it(node, confluence);
+    this->_its.push_back(it);
+
+    stmt->getStatement()->accept(this);
+
+    /* Switch終了 */
+    this->_its.pop_back();
+    this->pathSwitch(path);
+    this->_path->push(confluence);
     return CyVisitor::VISIT_CONTINUE;
 }
 
 int CyFlowVisitor::visit(CaseStatement* stmt)
 {
-    return CyVisitor::VISIT_CONTINUE;
+    int ope;
+    CyFlowPath    *path, *pathold;;
+    CyFlowDotNode *node = CyFlowDotNode::factory(stmt);
+
+    /* パスの追加 */
+    path = this->_graph->createPath(this->_its.back().begin());
+
+    /* 切り替えて内部処理をトレース */
+    pathold = this->pathSwitch(path);
+    this->_path->getLastEdge()->setHeadLabel(stmt->toString());
+    this->_path->getLastEdge()->setProperty("labelfloat", "true");
+    this->_path->getLastEdge()->setProperty("labelangle", "-90");
+    this->_path->getLastEdge()->setProperty("labeldistance", "2");
+
+    ope = stmt->getStatement()->accept(this);
+    if ( ope == CyVisitor::VISIT_CONTINUE )
+    {
+        if ( stmt->hasNextSibling() )
+        {
+            ope = stmt->getNextSibling()->accept(this);
+        }
+    }
+
+    return CyVisitor::VISIT_CONTINUE;;
+}
+
+int CyFlowVisitor::visit(DefaultStatement* stmt)
+{
+    int ope;
+    CyFlowPath    *path, *pathold;;
+
+    /* パスの追加 */
+    path = this->_graph->createPath(this->_its.back().begin());
+
+    /* 切り替えて内部処理をトレース */
+    pathold = this->pathSwitch(path);
+    this->_path->getLastEdge()->setHeadLabel(stmt->toString());
+    this->_path->getLastEdge()->setProperty("labelfloat", "true");
+    this->_path->getLastEdge()->setProperty("labelangle", "90");
+    this->_path->getLastEdge()->setProperty("labeldistance", "1");
+
+    ope = stmt->getStatement()->accept(this);
+
+    /* 元に戻す */
+    this->pathSwitch(pathold);
+    return ope;
 }
 
 

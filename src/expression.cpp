@@ -11,7 +11,6 @@ int Expression::accept(CyVisitor* visitor)
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
-    visitor->leave(this);
     return ope;
 }
 
@@ -25,7 +24,6 @@ int NullExpression::accept(CyVisitor* visitor)
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
-    visitor->leave(this);
     return ope;
 }
 

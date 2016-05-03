@@ -1,5 +1,20 @@
 
 
+int forloop (int a)
+{
+    if ( ((b + 1) == 1) && ((c + 2) == 2) )
+    {
+        while( b + 1 < 2)
+        {
+            a++;
+            if ( a == 1 )
+            {
+                continue;
+            }
+        }
+    }
+}
+
 
 int main(void)
 {
@@ -14,6 +29,10 @@ int main(void)
             while ( 1 )
             {
                 printf("hogehoge");
+                if ( a == 0 )
+                {
+                    break;
+                }
             }
         }
         else if ( ((b + 1) == 1) && ((c + 2) == 2) )
@@ -21,8 +40,29 @@ int main(void)
             while( b + 1 < 2)
             {
                 a++;
+                if ( a == 1 )
+                {
+                    continue;
+                }
             }
         }
     }
 
 }
+
+
+void iterate()
+{
+
+    for ( iterator = get_Iterator(); 
+            it != its.end(); 
+            it++ )
+    {
+        if ( hoge == 0 )
+        {
+            break;
+        }
+        i++;
+    }
+}
+

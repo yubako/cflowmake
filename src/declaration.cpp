@@ -11,7 +11,6 @@ int Declaration::accept(CyVisitor* visitor)
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
-    visitor->leave(this);
     return ope;
 }
 
@@ -21,9 +20,6 @@ int FunctionDefinition::accept(CyVisitor* visitor)
     ope = visitor->visit(this); 
     if ( ope != CyVisitor::VISIT_CONTINUE )
         return ope;
-
-    this->getStatement()->accept(visitor);
-    visitor->leave(this);
 
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
@@ -41,7 +37,6 @@ int NullDeclaration::accept(CyVisitor* visitor)
     if ( this->hasNextSibling() )
         ope = this->getNextSibling()->accept(visitor);
 
-    visitor->leave(this);
     return ope;
 }
 

@@ -35,7 +35,6 @@ class SwtStatement : public Statement
         {
             unsigned int len = 0;
             len += sprintf(this->_printbuff + len, "Switch: %s\n", this->getExpression()->toString());
-            len += sprintf(this->_printbuff + len, "%s", this->_stmt->toString());
             return this->_printbuff;
         }
 
@@ -43,7 +42,6 @@ class SwtStatement : public Statement
          * @override
          */
         virtual int accept(CyVisitor* visitor);
-
 };
 
 
@@ -78,8 +76,7 @@ class CaseStatement : public Statement
         const char* toString()
         {
             unsigned int len = 0;
-            len += sprintf(this->_printbuff + len, ":%s\n", this->getExpression()->toString());
-            len += sprintf(this->_printbuff + len, "%s", this->_stmt->toString());
+            len += sprintf(this->_printbuff + len, ":%s", this->getExpression()->toString());
             return this->_printbuff;
         }
 

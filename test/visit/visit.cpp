@@ -95,6 +95,19 @@ extern int yydebug;
 //}
 //
 
+TEST(visit, flowVisitorForstmt)
+{
+    const char* path = "loadsrcs/for.c";
+    CyFlowVisitor* visitor = new CyFlowVisitor();
+
+    EXPECT_EQ( 0 ,cflowSrcParse(path));
+
+    TranslationUnit* unit = TranslationUnit::getInstance();
+    unit->accept(visitor);
+    visitor->save("dots/for");
+    unit->deleteInstance();
+    delete visitor;
+}
 TEST(visit, flowVisitorIfstmt)
 {
     const char* path = "loadsrcs/func.c";
@@ -104,8 +117,21 @@ TEST(visit, flowVisitorIfstmt)
 
     TranslationUnit* unit = TranslationUnit::getInstance();
     unit->accept(visitor);
-    visitor->save("dots/");
+    visitor->save("dots/if");
     unit->deleteInstance();
     delete visitor;
 }
 
+TEST(visit, flowVisitorSwstmt)
+{
+    const char* path = "loadsrcs/switch.c";
+    CyFlowVisitor* visitor = new CyFlowVisitor();
+
+    EXPECT_EQ( 0 ,cflowSrcParse(path));
+
+    TranslationUnit* unit = TranslationUnit::getInstance();
+    unit->accept(visitor);
+    visitor->save("dots/swt");
+    unit->deleteInstance();
+    delete visitor;
+}

@@ -1,0 +1,58 @@
+digraph "void funchogehoge ( int hoge )" {
+
+    label = "void funchogehoge ( int hoge )";
+graph [
+    bgcolor = "#aaaaaa",
+    labelloc = "t",
+    splines = "false",
+];
+edge [
+    fillcolor = "#aaaaaa",
+    fontcolor = "#000000",
+    fontname = "NSimSun",
+    fontsize = "14",
+];
+node [
+    color = "#000000",
+    fillcolor = "#e6e6fa",
+    fixedsize = "true",
+    fontcolor = "#000000",
+    fontname = "NSimSun",
+    fontsize = "11",
+    shape = "box",
+    style = "filled, rounded",
+    width = "3.0",
+];
+
+
+
+Node_68    [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_69    [height = "0.3",shape = "diamond",style = "filled",width = "1",label = ""]
+Node_70    [height = "0.3",width = "4",label = " 49: printf('hogehoge\\n')\l"]
+Node_73    [height = "0.3",shape = "diamond",style = "filled",width = "1.0",label = ""]
+Node_75    [height = "0.3",width = "4",label = " 56: printf('ho\\n')\l"]
+Node_76    [height = "0.1",shape = "point",width = "0.1",label = ""]
+
+
+Node_68 -> Node_69  [ headlabel = " (a==0)
+    &&(b=1)\l", labelangle = "-45", labeldistance = "3.0", labelfloat = "true", weight = "100",];
+Node_69 -> Node_70  [ weight = "100",];
+Node_70 -> Node_73  [ weight = "100",];
+Node_73 -> Node_75  [ weight = "100",];
+Node_75 -> Node_76  [ weight = "100",];
+
+
+
+Node_71    [height = "0.1",shape = "point",width = "0.1",label = ""]
+Node_72    [height = "0.3",width = "4",label = " 53: printf('geho\\n')\l"]
+Node_74    [height = "0.1",shape = "point",width = "0.1",label = ""]
+
+
+Node_69 -> Node_71  [ dir = "none", headlabel = " False\l", labelangle = "90", labeldistance = "1", labelfloat = "true",];
+{rank = same; Node_69; Node_71}
+Node_71 -> Node_72  [ weight = "100",];
+Node_72 -> Node_74  [ weight = "100",];
+Node_73 -> Node_74  [ dir = "back",];
+{rank = same; Node_73; Node_74}
+}
+ 
