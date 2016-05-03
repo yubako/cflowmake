@@ -6,24 +6,31 @@
 #include "CyFlowDotNode.h"
 #include "CyFlowDotEdge.h"
 #include "CyFlowDotGraph.h"
+#include "vst/CyFlowLoopColor.h"
 #include <string.h>
 #include <stdio.h>
 #include <vector>
 
 
-class CyFlowIteration
+class CyFlowBlock
 {
     private:
         CyFlowDotNode       *_begin;
         CyFlowDotNode       *_end;
+        unsigned int         _type;
 
     public:
-        CyFlowIteration(CyFlowDotNode* begin, CyFlowDotNode* end)
+
+        static int TYPE_LOOP;
+        static int TYPE_SWITCH;
+
+        CyFlowBlock(unsigned int type, CyFlowDotNode* begin, CyFlowDotNode* end)
         {
             this->_begin = begin;
             this->_end   = end;
+            this->_type  = type;
         }
-        virtual ~CyFlowIteration()
+        virtual ~CyFlowBlock()
         {
         }
 
@@ -36,16 +43,22 @@ class CyFlowIteration
         {
             return this->_end;
         }
+
+        int getType()
+        {
+            return this->_type;
+        }
 };
 
 class CyFlowVisitor : public CyVisitor 
 {
     private:
-        std::vector<CyFlowIteration>    _its;
+        std::vector<CyFlowBlock>        _its;
         std::vector<CyFlowDotGraph*>    _graphs;
-        CyFlowDotGraph*                 _graph;
-        CyFlowPath*                     _path;
-        const char*                     _src;
+        CyFlowDotGraph                 *_graph;
+        CyFlowPath                     *_path;
+        const char                     *_src;
+        CyFlowLoopColor                *_color;
 
         CyFlowPath* pathSwitch(CyFlowPath* path)
         {
@@ -55,8 +68,14 @@ class CyFlowVisitor : public CyVisitor
         }
 
     public:
-        CyFlowVisitor() { }
-        virtual ~CyFlowVisitor() { }
+        CyFlowVisitor() 
+        {
+            this->_color = new CyFlowLoopColor();
+        }
+        virtual ~CyFlowVisitor() 
+        { 
+            delete this->_color;
+        }
 
         void save(const char* fpath);
 

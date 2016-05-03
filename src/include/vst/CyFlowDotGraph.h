@@ -169,6 +169,7 @@ class CyFlowDotGraph
             std::map<std::string, std::string> property;
             property["bgcolor"]      = "#aaaaaa";
             property["labelloc"]     = "t";
+            //property["splines"]      = "ortho"; /* 曲線は使わない */
             property["splines"]      = "false"; /* 曲線は使わない */
 
             unsigned int len = 0;

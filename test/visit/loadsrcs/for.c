@@ -16,6 +16,30 @@ int forloop (int a)
 }
 
 
+int nest()
+{
+    int i;
+    while(1)
+    {
+        while(2)
+        {
+            for (i = 0; i < 10;i++ )
+            {
+                while(3)
+                {
+                    while(4)
+                    {
+                        while(5)
+                        {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 int main(void)
 {
 

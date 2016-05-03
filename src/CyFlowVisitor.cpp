@@ -1,5 +1,6 @@
 
 #include "vst/CyFlowVisitor.h"
+#include "vst/CyFlowLoopColor.h"
 
 #include <vector>
 #include <iterator>
@@ -8,9 +9,14 @@
 
 using namespace std;
 
+int CyFlowBlock::TYPE_LOOP = 1;
+int CyFlowBlock::TYPE_SWITCH = 2;
+
 // --------------------------------------------------------------------------
 int CyFlowVisitor::visit(FunctionDefinition* decl)
 {
+    this->_color->reset();
+
     CyFlowDotGraph *graph = new CyFlowDotGraph(decl->toString());
     this->_graph = graph;
     this->_graphs.push_back(this->_graph);
@@ -113,15 +119,21 @@ int CyFlowVisitor::visit(IfStatement* stmt)
 
 int CyFlowVisitor::visit(WhileStatement* stmt)
 {
+    int ope;
+    char rgb[64];
     CyFlowDotNode *loopBegin, *loopEnd;
     CyFlowDotEdge* edge;
-    int ope;
 
     /* ループ開始と終了ノードを作成 */
     loopBegin = CyFlowDotNode::factory(stmt);
     loopEnd   = CyFlowDotNode::factoryLoopEnd();
-    CyFlowIteration it(loopBegin, loopEnd);
+    CyFlowBlock it(CyFlowBlock::TYPE_LOOP, loopBegin, loopEnd);
     this->_its.push_back(it);
+
+    /* 色付け */
+    sprintf(rgb, "#%06x", this->_color->get());
+    loopBegin->setProperty("fillcolor", rgb);
+    loopEnd->setProperty("fillcolor", rgb);
 
     /* 繰り返しノードを追加 */
     edge = this->_path->push(loopBegin);
@@ -143,14 +155,20 @@ int CyFlowVisitor::visit(WhileStatement* stmt)
 int CyFlowVisitor::visit(ForStatement* stmt)
 {
     int ope;
+    char rgb[64];
     CyFlowDotNode *loopBegin, *loopEnd;
-    CyFlowDotEdge* edge;
+    CyFlowDotEdge *edge;
 
     /* ループ開始と終了ノードを作成 */
     loopBegin = CyFlowDotNode::factory(stmt);
     loopEnd   = CyFlowDotNode::factoryLoopEnd();
-    CyFlowIteration it(loopBegin, loopEnd);
+    CyFlowBlock it(CyFlowBlock::TYPE_LOOP, loopBegin, loopEnd);
     this->_its.push_back(it);
+
+    /* 色付け */
+    sprintf(rgb, "#%06x", this->_color->get());
+    loopBegin->setProperty("fillcolor", rgb);
+    loopEnd->setProperty("fillcolor", rgb);
 
     /* 繰り返しノードを追加 */
     edge = this->_path->push(loopBegin);
@@ -195,6 +213,15 @@ int CyFlowVisitor::visit(BreakStatement* stmt)
     edge->setProperty("weight", "1.0");
     edge->setProperty("style", "dotted");
 
+    //edge->setFromPositionBottom();
+    //edge->setToPositionLeft();
+
+    if ( this->_its.back().getType() == CyFlowBlock::TYPE_LOOP )
+    {
+        /* loopであればぬける */
+        return CyVisitor::VISIT_BREAK;
+    }
+    /* Switchの場合は同レベル処理に他のcaseがあるので継続 */
     return CyVisitor::VISIT_CONTINUE;
 }
 
@@ -210,6 +237,10 @@ int CyFlowVisitor::visit(ContinueStatement* stmt)
                 this->_its.back().begin()->getNodeName());
     edge->setProperty("weight", "1.0");
     edge->setProperty("style", "dotted");
+
+    edge->setFromPositionLeft();
+    edge->setToPositionLeft();
+
 
     return CyVisitor::VISIT_CONTINUE;
 }
@@ -234,7 +265,7 @@ int CyFlowVisitor::visit(SwtStatement* stmt)
     this->_path->push(node);
 
     /* Switch開始 */
-    CyFlowIteration it(node, confluence);
+    CyFlowBlock it(CyFlowBlock::TYPE_SWITCH, node, confluence);
     this->_its.push_back(it);
 
     stmt->getStatement()->accept(this);
@@ -286,8 +317,8 @@ int CyFlowVisitor::visit(DefaultStatement* stmt)
     pathold = this->pathSwitch(path);
     this->_path->getLastEdge()->setHeadLabel(stmt->toString());
     this->_path->getLastEdge()->setProperty("labelfloat", "true");
-    this->_path->getLastEdge()->setProperty("labelangle", "90");
-    this->_path->getLastEdge()->setProperty("labeldistance", "1");
+    this->_path->getLastEdge()->setProperty("labelangle", "-90");
+    this->_path->getLastEdge()->setProperty("labeldistance", "2");
 
     ope = stmt->getStatement()->accept(this);
 

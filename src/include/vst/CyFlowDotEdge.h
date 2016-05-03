@@ -8,12 +8,16 @@ class CyFlowDotEdge
 {
     private:
         static std::vector<CyFlowDotEdge*>        _edge_all;
+        char                                      _frompos[16];
+        char                                      _topos[16];
 
         CyFlowDotEdge()
         {
             this->_from = NULL;
             this->_to   = NULL;
             this->_same = 0;
+            this->_frompos[0] = '\0';
+            this->_topos[0]   = '\0';
         }
 
     protected:
@@ -72,11 +76,19 @@ class CyFlowDotEdge
             this->_property[name] = value;
         }
 
+        void setFromPositionLeft()   { strcpy(this->_frompos, ":w"); }
+        void setFromPositionRight()  { strcpy(this->_frompos, ":e"); }
+        void setFromPositionBottom() { strcpy(this->_frompos, ":s"); }
+        void setToPositionLeft()     { strcpy(this->_topos  , ":w"); }
+        void setToPositionRight()    { strcpy(this->_topos  , ":e"); }
+
         virtual const char* toString()
         {
             unsigned int len = 0;
 
-            len += sprintf(this->_str + len, "%s -> %s ", this->_from, this->_to);
+            len += sprintf(this->_str + len, "%s%s ", this->_from, this->_frompos);
+            len += sprintf(this->_str + len, " -> %s%s ", this->_to, this->_topos);
+
             if ( this->_property.size() > 0 )
             {
                 len += sprintf(this->_str + len, " [");

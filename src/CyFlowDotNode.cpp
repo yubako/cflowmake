@@ -106,7 +106,6 @@ CyFlowDotNode* CyFlowDotNode::factory(WhileStatement* stmt)
     node->setProperty("style", "filled");
     node->setProperty("width", "1.0");
     node->setProperty("height", "0.3");
-    node->setProperty("fillcolor", "#3300ff");
     return node;
 }
 
@@ -117,7 +116,6 @@ CyFlowDotNode* CyFlowDotNode::factory(ForStatement* stmt)
     node->setProperty("style", "filled");
     node->setProperty("width", "1.0");
     node->setProperty("height", "0.3");
-    node->setProperty("fillcolor", "#3300ff");
     return node;
 }
 
@@ -127,7 +125,7 @@ CyFlowDotNode* CyFlowDotNode::factory(BreakStatement* stmt)
     CyFlowDotNode* node = new CyFlowDotNode();
     sprintf(str, "%d: %s", stmt->getLine(), stmt->toString());
     node->setLabel(str);
-    node->setProperty("width", "2.0");
+    node->setProperty("width", "3.5");
     node->setProperty("fillcolor", "#99ff00");
     return node;
 }
@@ -138,7 +136,7 @@ CyFlowDotNode* CyFlowDotNode::factory(ContinueStatement* stmt)
     CyFlowDotNode* node = new CyFlowDotNode();
     sprintf(str, "%d: %s", stmt->getLine(), stmt->toString());
     node->setLabel(str);
-    node->setProperty("width", "2.0");
+    node->setProperty("width", "3.5");
     node->setProperty("fillcolor", "#99ff00");
     return node;
 }
@@ -150,7 +148,6 @@ CyFlowDotNode* CyFlowDotNode::factoryLoopEnd()
     node->setProperty("style", "filled");
     node->setProperty("width", "1.0");
     node->setProperty("height", "0.3");
-    node->setProperty("fillcolor", "#3300ff");
     return node;
 }
 
