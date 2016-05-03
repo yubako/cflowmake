@@ -114,7 +114,7 @@ class CyFlowDotEdge
             this->_same = 1;
         }
 
-        const char* mk_labelstring(const char* str, size_t *widechars = NULL)
+        const char* mk_labelstring(const char* str )
         {
             unsigned int i;
             size_t linechars, charmax = 0;
@@ -127,48 +127,48 @@ class CyFlowDotEdge
             *ptr++ = ' ';
             for ( i = 0; i < len; i++ , linechars++ ) 
             {
-                if ( *(str + i) == '"' )
+                if ( *(str + i) == '\\')
                 {
-                    *ptr++ = '\'';
+                    *ptr++ = '\\';
+                    *ptr++ = '\\';
+                }else if ( *(str + i) == '\n')
+                {
+                    ptr += sprintf(ptr, "\\l    ");
+                    if ( charmax < linechars )
+                        charmax = linechars;
+                    linechars = 0;
                 }
-                else if ( *(str + i) == '\\')
-                {
-                    *ptr++ = '\\';
-                    *ptr++ = '\\';
-                }else
+                else
                 {
                     *ptr++ = *(str + i);
                 }
 
-                if ( linechars  > 20 &&
-                        (  ( *(str + i) == ' ') || ( *(str + i) == ';' )
-                        || ( *(str + i) == ',') || ( *(str + i) == '\n') ) )
-                {
-                    ptr += sprintf(ptr, "\\l    ");
+                //if ( linechars  > 20 &&
+                //        (  ( *(str + i) == ';' )
+                //        || ( *(str + i) == ',') || ( *(str + i) == '\n') 
+                //        || ( *(str + i) == '.') || ( *(str + i) == '=' ) 
+                //        || ( *(str + i) == '|') || ( *(str + i) == '&' ) ) )
+                //{
+                //    ptr += sprintf(ptr, "\\l    ");
 
-                    if ( charmax < linechars )
-                        charmax = linechars;
+                //    if ( charmax < linechars )
+                //        charmax = linechars;
 
-                    linechars = 0;
-                }
+                //    linechars = 0;
+                //}
             }
-            if ( charmax < linechars )
-                charmax = linechars;
 
             ptr += sprintf(ptr, "\\l");
-
-            if ( widechars )
-                *widechars = charmax;
             return buffer;
         }
 
         void setHeadLabel(const char* str)
         {
-            size_t chars;
-            char   buff[128];
-            this->setProperty("headlabel", this->mk_labelstring(str, &chars));
-            sprintf(buff, "%0.1f", chars/(double)2);
-            this->setProperty("labeldistance", buff);
+            //size_t chars;
+            //char   buff[128];
+            this->setProperty("headlabel", this->mk_labelstring(str));
+            //sprintf(buff, "%0.1f", chars/(double)2);
+            //this->setProperty("labeldistance", buff);
         }
 };
 

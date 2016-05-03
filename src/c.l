@@ -59,10 +59,13 @@ unsigned    |
 key_t       |
 Dl_info     |
 size_t      |
+ssize_t     |
 pid_t       |
 uint64_t    |
 uint32_t    |
-uint16_t    {
+uint16_t    |
+fd_set      |
+function_call_stack_data {
 
 
                 /* sys/types.h の一部についても含めておく。typedef定義の対応が面倒... */

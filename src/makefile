@@ -2,8 +2,8 @@
 LMNAME  = cflowmake
 make_directory  = $(if $(call realpath, $(1)), ,$(shell mkdir -p $(1)))
 YACCWORK=.yaccwork
-#YACCDEBUG=-DYYERROR_VERBOSE -DYYDEBUG -DDEBUG
-YACCDEBUG=-DYYERROR_VERBOSE -DYYDEBUG 
+YACCDEBUG=-DYYERROR_VERBOSE -DYYDEBUG -DDEBUG
+#YACCDEBUG=-DYYERROR_VERBOSE -DYYDEBUG 
 
 HEADDIR=-Iinclude 
 
@@ -21,6 +21,7 @@ SILENCE=@
 all : $(LIB)
 	@echo "make binary $(LMNAME)"
 	$(SILENCE)g++ -o $(LMNAME) $(OBJ_DIR)/main.o -L$(LIB_DIR)  -lcyl -ll
+	@ls -l $(LMNAME)
 
 $(LIB) : $(OBJS) 
 	@[ -d $(LIB_DIR)  ]; mkdir -p $(LIB_DIR)

@@ -93,10 +93,27 @@ class ForStatement : public Statement
         const char* toString()
         {
             unsigned int len = 0;
-            len += sprintf(this->_printbuff + len, "for(%s; %s; %s)",
-                    this->getInitExpression()->toString(),
-                    this->getCondExpression()->toString(),
+            unsigned int line = this->getInitExpression()->getLine();
+
+            len += sprintf(this->_printbuff + len, "for(%s; ",
+                    this->getInitExpression()->toString());
+
+            if ( line < this->getCondExpression()->getLine() )
+                len += sprintf(this->_printbuff + len, "\n");
+
+            len += sprintf(this->_printbuff + len, "%s; ",
+                    this->getCondExpression()->toString());
+
+            if ( line < this->getLoopExpression()->getLine() )
+                len += sprintf(this->_printbuff + len, "\n");
+
+            len += sprintf(this->_printbuff + len, "%s) ",
                     this->getLoopExpression()->toString());
+
+            //len += sprintf(this->_printbuff + len, "for(%s; %s; %s)",
+            //        this->getInitExpression()->toString(),
+            //        this->getCondExpression()->toString(),
+            //        this->getLoopExpression()->toString());
             return this->_printbuff;
         }
 

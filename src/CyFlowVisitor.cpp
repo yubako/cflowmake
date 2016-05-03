@@ -104,13 +104,11 @@ int CyFlowVisitor::visit(IfStatement* stmt)
         {
             /* 合流地点から継続 */
             this->pathSwitch(pathTrue);
-            return ope2;
         }
         else if ( ope2 == CyVisitor::VISIT_CONTINUE )
         {
             /* 合流地点から継続 */
             this->pathSwitch(pathElse);
-            return ope1;
         }
     }
 
@@ -139,7 +137,8 @@ int CyFlowVisitor::visit(WhileStatement* stmt)
     edge = this->_path->push(loopBegin);
     edge->setHeadLabel(stmt->toString());
     edge->setProperty("labelfloat", "true");
-    edge->setProperty("labelangle", "-90");
+    edge->setProperty("labelangle", "180");
+    edge->setProperty("labeldistance", "1");
 
     /* for本体 */
     ope = stmt->getStatement()->accept(this);
@@ -174,7 +173,8 @@ int CyFlowVisitor::visit(ForStatement* stmt)
     edge = this->_path->push(loopBegin);
     edge->setHeadLabel(stmt->toString());
     edge->setProperty("labelfloat", "true");
-    edge->setProperty("labelangle", "-90");
+    edge->setProperty("labelangle", "180");
+    edge->setProperty("labeldistance", "1");
 
     /* for本体 */
     ope = stmt->getStatement()->accept(this);
@@ -335,6 +335,7 @@ void CyFlowVisitor::save(const char* fpath)
     {
         CyFlowDotGraph* graph = *it;
         graph->saveDotFile(fpath);
+        printf("saved: %s\n", graph->getName());
     }
 }
 

@@ -1,4 +1,20 @@
 
+static int hoge[4096];
+
+int forloop2()
+{
+    void *from, *to;
+    void *ptr;
+
+    for ( ptr = from; 
+            ptr <= (uint32_t*)to; ptr ++)
+    {
+        ptr = NULL;
+    }
+
+    return 0;
+}
+
 
 int forloop (int a)
 {

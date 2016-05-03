@@ -251,6 +251,7 @@ struct_declaration_list                 : struct_declaration
 init_declarator_list                    : init_declarator
                                         {
                                             $<str>$ = $<str>1;
+                                            dprintf("init declarator list1", "%s\n", $<str>$);
                                         }
                                         | init_declarator_list ',' init_declarator
                                         {
@@ -258,12 +259,14 @@ init_declarator_list                    : init_declarator
                                             str = psbuff_realloc($<str>1, $<str>2);
                                             str = psbuff_realloc(str,     $<str>3);
                                             $<str>$ = str;
+                                            dprintf("init declarator list2", "%s\n", $<str>$);
                                         }
                                         ;
 
 init_declarator                         : declarator
                                         {
                                             $<str>$ = $<str>1;
+                                            dprintf("init declarator1", "%s\n", $<str>$);
                                         }
                                         | declarator '=' initializer
                                         {
@@ -271,6 +274,7 @@ init_declarator                         : declarator
                                             str = psbuff_realloc($<str>1, $<str>2);
                                             str = psbuff_realloc(str,     $<str>3);
                                             $<str>$ = str;
+                                            dprintf("init declarator2", "%s\n", $<str>$);
                                         }
                                         ;
 
@@ -396,16 +400,19 @@ enumerator                              : identifier
 declarator                              : pointer direct_declarator
                                         {
                                             $<str>$ = psbuff_realloc($<str>1, $<str>2);
+                                            dprintf("declarator1", "%s\n", $<str>$);
                                         }
                                         |         direct_declarator
                                         {
                                             $<str>$ = $<str>1;
+                                            dprintf("declarator2", "%s\n", $<str>$);
                                         }
                                         ;
 
 direct_declarator                       : identifier 
                                         {
                                             $<str>$ = $<str>1;
+                                            dprintf("direct declarator1", "%s\n", $<str>$);
                                         }
                                         | '(' declarator ')'
                                         {
@@ -413,14 +420,16 @@ direct_declarator                       : identifier
                                             str = psbuff_realloc($<str>1, $<str>2);
                                             str = psbuff_realloc(str,     $<str>3);
                                             $<str>$ = str;
+                                            dprintf("direct declarator2", "%s\n", $<str>$);
                                         }
                                         | direct_declarator '[' constant_expression']'
                                         {
                                             char* str;
                                             str = psbuff_realloc($<str>1, $<str>2);
-                                            str = psbuff_realloc(str,     $<str>3);
+                                            str = psbuff_realloc(str,     $<expr>3->toString());
                                             str = psbuff_realloc(str,     $<str>4);
                                             $<str>$ = str;
+                                            dprintf("direct declarator3", "%s\n", $<str>$);
                                         }
                                         | direct_declarator '['                    ']'
                                         {
@@ -428,6 +437,7 @@ direct_declarator                       : identifier
                                             str = psbuff_realloc($<str>1, $<str>2);
                                             str = psbuff_realloc(str,     $<str>3);
                                             $<str>$ = str;
+                                            dprintf("direct declarator4", "%s\n", $<str>$);
                                         }
                                         | direct_declarator '(' parameter_type_list ')'
                                         {
@@ -436,6 +446,7 @@ direct_declarator                       : identifier
                                             str = psbuff_realloc(str,     $<str>3);
                                             str = psbuff_realloc(str,     $<str>4);
                                             $<str>$ = str;
+                                            dprintf("direct declarator5", "%s\n", $<str>$);
                                         }
                                         | direct_declarator '(' identifier_list     ')'
                                         {
@@ -444,6 +455,7 @@ direct_declarator                       : identifier
                                             str = psbuff_realloc(str,     $<str>3);
                                             str = psbuff_realloc(str,     $<str>4);
                                             $<str>$ = str;
+                                            dprintf("direct declarator6", "%s\n", $<str>$);
                                         }
                                         | direct_declarator '('                     ')'
                                         {
@@ -451,6 +463,7 @@ direct_declarator                       : identifier
                                             str = psbuff_realloc($<str>1, $<str>2);
                                             str = psbuff_realloc(str,     $<str>3);
                                             $<str>$ = str;
+                                            dprintf("direct declarator7", "%s\n", $<str>$);
                                         }
                                         ;
 
@@ -1197,6 +1210,7 @@ multiplicative_expression               : cast_expression
 cast_expression                         : unary_expression
                                         {
                                             $<expr>$ = $<expr>1;
+                                            dprintf("Cast Expression1", "%s\n", $<expr>$->toString());
                                         }
                                         | '(' type_name ')' cast_expression
                                         {
@@ -1205,7 +1219,9 @@ cast_expression                         : unary_expression
 
                                             sprintf(str, "(%s)", $<str>2);
                                             Expression *expr = new Expression(g_line, str);
+                                            expr->pushSibling($<expr>4);
                                             $<expr>$ = expr;
+                                            dprintf("Cast Expression2", "%s\n", $<expr>$->toString());
                                         }
                                         ;
 

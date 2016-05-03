@@ -44,6 +44,7 @@ class Expression : public SourceLocation
         const char* toString()
         {
             unsigned int len = 0;
+            unsigned int line = this->getLine();
             len += sprintf(this->_printbuff + len, "%s", this->getCodeString());
 
             if ( strcmp(this->getCodeString(), ",") == 0 )
@@ -53,13 +54,12 @@ class Expression : public SourceLocation
 
             if ( this->hasNextSibling() ) 
             {
-                if ( this->getNextSibling()->getLine() > this->getLine() )
+                if ( this->getNextSibling()->getLine() > line )
                 {
                     len += sprintf(this->_printbuff + len, "\n    ");
                 }
                 len += sprintf(this->_printbuff + len, "%s", this->getNextSibling()->toString());
             }
-
             return this->_printbuff;
         }
 

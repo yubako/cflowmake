@@ -96,6 +96,7 @@ CyFlowDotNode* CyFlowDotNode::factory(ReturnStatement* stmt)
     CyFlowDotNode* node = new CyFlowDotNode();
     sprintf(str, "%d: %s", stmt->getLine(), stmt->toString());
     node->setLabel(str);
+    node->setProperty("fillcolor", "#99ff00");
     return node;
 }
 
@@ -185,36 +186,46 @@ void CyFlowDotNode::setLabel(const char* str)
             *ptr++ = '\\';
             *ptr++ = '\\';
         }
+        else if ( *(str + i) == '%')
+        {
+            *ptr++ = '%';
+            *ptr++ = '%';
+        }
         else if ( *(str + i) == '\n')
         {
-            *ptr++ = '\\';
-            *ptr++ = 'l';
-            line++;
-
+            ptr += sprintf(ptr, "\\l        ");
             if ( charmax < linechars )
                 charmax = linechars;
             linechars = 0;
+            line++;
         }
         else
         {
             *ptr++ = *(str + i);
         }
 
-        if ( linechars  > 40 && *(str + i) == ' ')
-        {
-            ptr += sprintf(ptr, "\\l    ");
-            if ( charmax < linechars )
-                charmax = linechars;
-            linechars = 0;
-        }
+        //if ( linechars  > 30 &&
+        //        (  ( *(str + i) == ';' )
+        //        || ( *(str + i) == ',') || ( *(str + i) == '\n') 
+        //        || ( *(str + i) == '.') || ( *(str + i) == '=' ) 
+        //        || ( *(str + i) == '|') || ( *(str + i) == '&' ) ) )
+        //{
+        //    ptr += sprintf(ptr, "\\l        ");
+        //    if ( charmax < linechars )
+        //        charmax = linechars;
+        //    linechars = 0;
+        //    line++;
+        //}
     }
+    if ( charmax < linechars )
+        charmax = linechars;
 
     sprintf(property, "%.1f", 1 + (0.3 * line - 1));
     this->setProperty("height", property);
 
     if ( charmax < 40 )
     {
-        this->setProperty("width", "4");
+        this->setProperty("width", "5");
     }
     else
     {
@@ -223,3 +234,5 @@ void CyFlowDotNode::setLabel(const char* str)
     }
     strcat(this->_label, "\\l");  //左寄せ
 }
+
+
