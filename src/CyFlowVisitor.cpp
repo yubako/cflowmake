@@ -56,13 +56,15 @@ int CyFlowVisitor::visit(ExpressionStatement* stmt)
     return CyVisitor::VISIT_CONTINUE;
 }
 
+static int indent = 0;
+
 int CyFlowVisitor::visit(IfStatement* stmt)
 {
     int ope1, ope2;
     CyFlowDotEdge *edge;
     CyFlowDotNode *node, *confluence;
     CyFlowPath    *pathTrue, *pathElse;
-    
+
     /* IFノード追加 */
     node = CyFlowDotNode::factory(stmt);
     edge = this->_path->push(node);
@@ -83,11 +85,20 @@ int CyFlowVisitor::visit(IfStatement* stmt)
     //this->_path->getLastEdge()->setProperty("labelfloat", "true");
     this->_path->getLastEdge()->setProperty("labelangle", "-90");
     this->_path->getLastEdge()->setProperty("labeldistance", "2");
+
     ope2 = stmt->getElse()->accept(this);
 
+    /* elseパスを最新化(結合させる対象を取得) */
+    pathElse = this->_path;
+
+    /* 合流 */
     if ( ope1 == CyVisitor::VISIT_CONTINUE
             && ope2 == CyVisitor::VISIT_CONTINUE )
     {
+        /* 階層をそろえる */
+        //pathTrue->push(CyFlowDotNode::factoryVertexNode());
+        //pathElse->push(CyFlowDotNode::factoryVertexNode());
+
         /* 合流地点を作成 */
         confluence = CyFlowDotNode::factoryConfluenceNode();
         pathTrue->push(confluence);
@@ -97,22 +108,22 @@ int CyFlowVisitor::visit(IfStatement* stmt)
 
         /* 続きはTrueの流れで */
         this->pathSwitch(pathTrue);
+        return CyVisitor::VISIT_CONTINUE;
     }
     else
     {
         if ( ope1 == CyVisitor::VISIT_CONTINUE )
         {
-            /* 合流地点から継続 */
             this->pathSwitch(pathTrue);
+            return CyVisitor::VISIT_CONTINUE;
         }
         else if ( ope2 == CyVisitor::VISIT_CONTINUE )
         {
-            /* 合流地点から継続 */
             this->pathSwitch(pathElse);
+            return CyVisitor::VISIT_CONTINUE;
         }
+        return CyVisitor::VISIT_BREAK;
     }
-
-    return CyVisitor::VISIT_CONTINUE;
 }
 
 int CyFlowVisitor::visit(WhileStatement* stmt)
