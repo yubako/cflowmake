@@ -12,14 +12,12 @@ class CyFlowLoopColor
         {
             this->_idx = 0;
             this->_rgb = new unsigned int[16];
-            this->_rgb[0] = 0x0033ff;
-            this->_rgb[1] = 0x00ffff;
-            this->_rgb[2] = 0x009900;
-            this->_rgb[3] = 0x330000;
-            this->_rgb[4] = 0x6600ff;
-            this->_rgb[5] = 0x663333;
-            this->_rgb[6] = 0x660000;
-            this->_rgb[7] = 0xff9900;
+            this->_rgb[0] = 0xA3BCE2;
+            this->_rgb[1] = 0xCFA7CD;
+            this->_rgb[2] = 0xA59ACA;
+            this->_rgb[3] = 0xCF7250;
+            this->_rgb[4] = 0x007B43;
+            this->_rgb[5] = 0xA7366D;
         }
 
         ~CyFlowLoopColor()

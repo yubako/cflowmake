@@ -50,10 +50,10 @@ class CyFlowDotEdge
             unsigned int len = 0;
             std::map<std::string, std::string> property;
 
-            property["fontsize"]   = "14";
-            property["fontcolor"]  = "#000000";
+            property["fontsize"]   = "12";
+            property["fontcolor"]  = "#333333";
             property["fontname"]   = "NSimSun";
-            property["fillcolor"]  = "#aaaaaa";
+            property["fillcolor"]  = "#929994";
 
             len += sprintf(str + len, "edge [\n");
             for ( std::map<std::string, std::string>::iterator it = property.begin();

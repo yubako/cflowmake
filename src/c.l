@@ -65,7 +65,9 @@ uint64_t    |
 uint32_t    |
 uint16_t    |
 fd_set      |
-function_call_stack_data {
+pthread_t   |
+pthread_mutex_t     |
+pthread_mutexattr_t {
 
 
                 /* sys/types.h の一部についても含めておく。typedef定義の対応が面倒... */

@@ -59,6 +59,7 @@ class CyFlowVisitor : public CyVisitor
         CyFlowPath                     *_path;
         const char                     *_src;
         CyFlowLoopColor                *_color;
+        size_t                          _nest;
 
         CyFlowPath* pathSwitch(CyFlowPath* path)
         {

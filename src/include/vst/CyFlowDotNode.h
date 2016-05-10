@@ -49,6 +49,8 @@ class CyFlowDotNode
         static CyFlowDotNode* factoryLoopEnd();
         static CyFlowDotNode* factoryVertexNode();
         static CyFlowDotNode* factoryConfluenceNode();
+        static CyFlowDotNode* factoryStartNode();
+        static CyFlowDotNode* factoryEndNode();
 
 
         static unsigned int nodeDefaultDefine(char* str)

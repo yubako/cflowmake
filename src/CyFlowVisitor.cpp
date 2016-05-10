@@ -16,19 +16,20 @@ int CyFlowBlock::TYPE_SWITCH = 2;
 int CyFlowVisitor::visit(FunctionDefinition* decl)
 {
     this->_color->reset();
+    this->_nest = 0;
 
     CyFlowDotGraph *graph = new CyFlowDotGraph(decl->toString());
     this->_graph = graph;
     this->_graphs.push_back(this->_graph);
 
     /* 起点を作成 */
-    this->_path = this->_graph->createPath(NULL);
+    this->_path = this->_graph->createPath(NULL, CyFlowDotNode::factoryStartNode());
 
     /* 関数本体にaccept */
     decl->getStatement()->accept(this);
 
     /* 終点を作成 */
-    this->_path->close(NULL);
+    this->_path->close(NULL, CyFlowDotNode::factoryEndNode());
 
     return CyVisitor::VISIT_CONTINUE;
 }
@@ -64,6 +65,8 @@ int CyFlowVisitor::visit(IfStatement* stmt)
     CyFlowDotEdge *edge;
     CyFlowDotNode *node, *confluence;
     CyFlowPath    *pathTrue, *pathElse;
+    size_t nest;
+    size_t trueNest, elseNest;
 
     /* IFノード追加 */
     node = CyFlowDotNode::factory(stmt);
@@ -71,33 +74,55 @@ int CyFlowVisitor::visit(IfStatement* stmt)
 
     /* IFノードのラベルは右上に表示 */
     edge->setHeadLabel(stmt->toString());
-    //edge->setProperty("labelfloat", "true");
     edge->setProperty("labeldistance", "3.0");
     edge->setProperty("labelangle", "-45");
 
+    /* 階層を退避 */
+    this->_nest += this->_path->nodeCount();
+    nest = this->_nest;
+
     /* true */
     ope1 = stmt->getTrue()->accept(this);
+
+    /* 階層を保存 */
+    trueNest = this->_nest;
+    this->_nest = nest;
 
     /* else */
     pathElse = this->_graph->createPath(node);
     pathTrue = this->pathSwitch(pathElse);
     this->_path->getLastEdge()->setHeadLabel("False");
-    //this->_path->getLastEdge()->setProperty("labelfloat", "true");
     this->_path->getLastEdge()->setProperty("labelangle", "-90");
     this->_path->getLastEdge()->setProperty("labeldistance", "2");
 
     ope2 = stmt->getElse()->accept(this);
 
+    /* 階層を保存 */
+    elseNest = this->_nest;
+    this->_nest = nest;
+
     /* elseパスを最新化(結合させる対象を取得) */
     pathElse = this->_path;
+
+    /* 階層が深いほうが最深 */
+    if ( trueNest < elseNest )
+    {
+        this->_nest = elseNest;
+    }
+    else
+    {
+        this->_nest = trueNest;
+    }
 
     /* 合流 */
     if ( ope1 == CyVisitor::VISIT_CONTINUE
             && ope2 == CyVisitor::VISIT_CONTINUE )
     {
-        /* 階層をそろえる */
-        //pathTrue->push(CyFlowDotNode::factoryVertexNode());
-        //pathElse->push(CyFlowDotNode::factoryVertexNode());
+        /* 重ならないように位置補完(confluence追加するので -1) */
+        while ( nest++ < this->_nest - 1 )
+        {
+            pathTrue->push(CyFlowDotNode::factoryVertexNode())->setProperty("dir", "none");
+        }
 
         /* 合流地点を作成 */
         confluence = CyFlowDotNode::factoryConfluenceNode();
@@ -300,7 +325,6 @@ int CyFlowVisitor::visit(CaseStatement* stmt)
     /* 切り替えて内部処理をトレース */
     pathold = this->pathSwitch(path);
     this->_path->getLastEdge()->setHeadLabel(stmt->toString());
-    //this->_path->getLastEdge()->setProperty("labelfloat", "true");
     this->_path->getLastEdge()->setProperty("labelangle", "-90");
     this->_path->getLastEdge()->setProperty("labeldistance", "2");
 
@@ -327,7 +351,6 @@ int CyFlowVisitor::visit(DefaultStatement* stmt)
     /* 切り替えて内部処理をトレース */
     pathold = this->pathSwitch(path);
     this->_path->getLastEdge()->setHeadLabel(stmt->toString());
-    //this->_path->getLastEdge()->setProperty("labelfloat", "true");
     this->_path->getLastEdge()->setProperty("labelangle", "-90");
     this->_path->getLastEdge()->setProperty("labeldistance", "2");
 

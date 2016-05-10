@@ -14,19 +14,20 @@ class CyFlowPath
         const char*                 _cur_node;
 
     public:
-        CyFlowPath(CyFlowDotNode* node)
+        CyFlowPath(CyFlowDotNode* samenode, CyFlowDotNode* entrance = NULL)
         {
-            CyFlowDotNode* entrance;
-
             /* Pathの起点を作成 */
-            entrance = CyFlowDotNode::factoryVertexNode();
+            if ( entrance == NULL )
+            {
+                entrance = CyFlowDotNode::factoryVertexNode();
+            }
             this->_entrance = entrance;
             this->_cur_node = entrance->getNodeName();
             this->_nodes.push_back(entrance);
 
-            if ( node ) 
+            if ( samenode ) 
             {
-                this->moveToSameNode(node)->setProperty("dir", "none");
+                this->moveToSameNode(samenode)->setProperty("dir", "none");
             }
         }
         ~CyFlowPath()
@@ -95,10 +96,13 @@ class CyFlowPath
             return this->_cur_node;
         }
 
-        void close(CyFlowDotNode* confluence)
+        void close(CyFlowDotNode* confluence, CyFlowDotNode* fin = NULL)
         {
             /* 終点ノードの作成 */
-            CyFlowDotNode* fin  = CyFlowDotNode::factoryVertexNode();
+            if ( fin == NULL )
+            {
+                fin  = CyFlowDotNode::factoryVertexNode();
+            }
             this->push(fin);
 
             /* 引数と連結 */
@@ -137,7 +141,7 @@ class CyFlowPath
 class CyFlowDotGraph
 {
     private:
-        char                        _name[128];
+        char                        _name[1024];
         std::vector<CyFlowPath*>    _paths;
 
     public:
@@ -152,9 +156,9 @@ class CyFlowDotGraph
             return this->_name;
         }
 
-        CyFlowPath* createPath(CyFlowDotNode* sameNode)
+        CyFlowPath* createPath(CyFlowDotNode* sameNode, CyFlowDotNode* entryNode = NULL)
         {
-            CyFlowPath* path = new CyFlowPath(sameNode);
+            CyFlowPath* path = new CyFlowPath(sameNode, entryNode);
             this->_paths.push_back(path);
             return path;
         }
@@ -167,7 +171,7 @@ class CyFlowDotGraph
         static unsigned int graphDefaultDefine(char* str)
         {
             std::map<std::string, std::string> property;
-            property["bgcolor"]      = "#aaaaaa";
+            property["bgcolor"]      = "#FFFCDB";
             property["labelloc"]     = "t";
             //property["splines"]      = "ortho"; /* 曲線は使わない */
             property["splines"]      = "false"; /* 曲線は使わない */
