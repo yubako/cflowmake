@@ -67,7 +67,8 @@ uint16_t    |
 fd_set      |
 pthread_t   |
 pthread_mutex_t     |
-pthread_mutexattr_t {
+pthread_mutexattr_t |
+sigset_t            {
 
 
                 /* sys/types.h の一部についても含めておく。typedef定義の対応が面倒... */

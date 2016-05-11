@@ -1370,7 +1370,7 @@ primary_expression                      : identifier
                                             Expression *expr = new Expression(g_line, $<str>1);
                                             $<expr>$ = expr;
                                         }
-                                        | string
+                                        | string_list
                                         {
                                             Expression* expr = new Expression(g_line, $<str>1);
                                             $<expr>$ = expr;
@@ -1384,6 +1384,20 @@ primary_expression                      : identifier
                                             $<expr>$ = base;
                                         }
                                         ;
+
+string_list                             : string
+                                        {
+                                            $<str>$ = $<str>1;
+                                        }
+                                        | string_list string
+                                        {
+                                            char* str;
+                                            str = psbuff_realloc($<str>1, "\n");
+                                            str = psbuff_realloc(str, $<str>2);
+                                            $<str>$ = str;
+                                        }
+                                        ;
+
 
 constant                                : integer_constant
                                         {
