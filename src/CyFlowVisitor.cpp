@@ -369,7 +369,7 @@ void CyFlowVisitor::save(const char* fpath)
     {
         CyFlowDotGraph* graph = *it;
         graph->saveDotFile(fpath);
-        printf("saved: %s\n", graph->getName());
+        printf("    saved: %s\n", graph->getName());
     }
 }
 

@@ -4,10 +4,12 @@
 
 #include "cflowcase.h"
 #include "vst/CyFlowVisitor.h"
+#include "vst/CyComplexityVisitor.h"
 
 struct ArgOption
 {
-    const char* odir;
+    const char*  odir;
+    unsigned int complexity;
 };
 struct ArgOption option;
 
@@ -15,13 +17,16 @@ int argoptions(int argc, char** argv)
 {
     int opt;
     int ind = 1;
+
+    memset(&option, 0, sizeof(option));
     option.odir = "./";
 
-    while ( (opt = getopt(argc, argv, "o:")) != -1 )
+    while ( (opt = getopt(argc, argv, "o:c")) != -1 )
     {
         switch(opt)
         {
             case 'o': option.odir = argv[++ind]; break;
+            case 'c': option.complexity = 1;
             default: printf("Unknoun option %c\n", opt);break;
         }
         ind++;
@@ -36,26 +41,38 @@ int main(int argc, char** argv)
 {
 
     int opt = argoptions(argc, argv);
+
+
     for ( ; opt < argc; opt++ ) 
     {
-        CyFlowVisitor* visitor = new CyFlowVisitor();
-
         /* ソース解析 */
         printf("argv[%d] = %s\n", opt, argv[opt]);
         if ( cflowSrcParse(argv[opt]) == 0 ) 
         {
-            /* Flow作成 */
             TranslationUnit* unit = TranslationUnit::getInstance();
-            unit->accept(visitor);
-            visitor->save(option.odir);
+
+            if ( option.complexity )
+            {
+                /* 複雑殿計算 */
+                CyComplexityVisitor* visitor = new CyComplexityVisitor();
+                unit->accept(visitor);
+                delete visitor;
+            }
+            else
+            {
+                /* Flow作成 */
+                CyFlowVisitor* visitor = new CyFlowVisitor();
+                unit->accept(visitor);
+                visitor->save(option.odir);
+                delete visitor;
+            }
         }
         else
         {
-            printf("Error. %s\n", argv[opt]);
+            fprintf(stderr, "Error. %s\n", argv[opt]);
         }
 
         TranslationUnit::getInstance()->deleteInstance();
-        delete visitor;
     }
     return 0;
 }
